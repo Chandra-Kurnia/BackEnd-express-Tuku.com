@@ -1,0 +1,1 @@
+console.log("This is file javascript for node js");
