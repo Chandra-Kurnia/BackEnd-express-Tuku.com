@@ -1,0 +1,41 @@
+Insert product
+{
+    "product_name": "batik solo",
+    "color": "LLL",
+    "size": "6",
+    "price": "690000",
+    "quantity": 30,
+    "status": "new",
+    "description": "Batik dari solo khas dengan corak awan",
+    "image": "unplash.com/batik_solo"
+}
+
+Sign up customer
+{
+    "roles": "customer",
+    "name": "Candra Kurniawan",
+    "email": "password",
+    "password": "pw"
+}
+
+sign up seller
+{
+    "roles": "customer",
+    "name": "Chandra Kurnia",
+    "email": "candraKqurniawan@gmail.com",
+    "pass": "kucing_kucing",
+    "phone_number": "0929209192"
+    "store_name": "monoShop"
+}
+
+User Update
+{
+    "name": "Chandra Kurnia",
+    "email": "candraKqurniawan@gmail.com",
+    "pass": "kucing_kucing",
+    "sex": "male",
+    "date_birth": "19",
+    "month_birth": "6",
+    "year_birth": "2002",
+    "phone_number": "0929209192"
+}
