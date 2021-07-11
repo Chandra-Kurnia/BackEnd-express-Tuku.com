@@ -1,11 +1,11 @@
-const modelProduct = require("../models/product");
-const helpersProduct = require("../helpers/product");
+const modelProduct = require('../models/product');
+const helpersProduct = require('../helpers/product');
 
 // create product
 const createProduct = (req, res) => {
   // get request
   const {
-    product_name,
+    productName,
     color,
     size,
     price,
@@ -17,28 +17,27 @@ const createProduct = (req, res) => {
   // Validation
   const statusUp = status.toUpperCase();
   if (
-    (product_name == "") |
-    (color == "") |
-    (size == "") |
-    (price == "") |
-    (quantity == "") |
-    isNaN(quantity) |
-    (status == "") |
-    (statusUp !== "NEW") |
-    (statusUp !== "FORMER") |
-    (description == "") |
-    (image == "")
+    (productName === '')
+    || (color === '')
+    || (size === '')
+    || (price === '')
+    || (quantity === '')
+    || isNaN(quantity)
+    || (status === '')
+    || (statusUp !== 'NEW')
+    || (statusUp !== 'FORMER')
+    || (description === '')
+    || (image === '')
   ) {
     helpersProduct.response(
       res,
       400,
-      "Bad Request, you inserted a wrong input"
+      'Bad Request, you inserted a wrong input',
     );
-  }
-  // Validation success
-  else {
+  } else {
+    // Validation succes
     const data = {
-      product_name,
+      product_name: productName,
       color,
       size,
       price,
@@ -49,61 +48,61 @@ const createProduct = (req, res) => {
     };
     modelProduct
       .createProduct(data)
-      .then((result) => {
+      .then(() => {
         helpersProduct.response(
           res,
           200,
-          "Data successfully inserted",
+          'Data successfully inserted',
           data,
-          null
+          null,
         );
       })
       .catch((err) => {
-        helpersProduct.response(res, 500, "Server error", null, err);
+        helpersProduct.response(res, 500, 'Server error', null, err);
       });
   }
 };
 
 // read product
 const getAllProduct = (req, res) => {
-  let order = req.query.order;
-  let keyword = req.query.keyword;
-  let limit = req.query.limit;
-  let page = req.query.page;
+  const {
+    order, keyword, limit, page,
+  } = req.query;
 
   modelProduct
     .getAllProduct(order, keyword, limit, page)
     .then((dataProduct) => {
       const amount = dataProduct.length;
-      if ((amount == null) | (amount == "")) {
-        helpersProduct.response(res, 404, "Data Not Found", null);
+      if ((amount == null) || (amount === '')) {
+        helpersProduct.response(res, 404, 'Data Not Found', null);
       } else {
         helpersProduct.response(
           res,
           200,
-          "all data successfully loaded",
+          'all data successfully loaded',
           dataProduct,
           null,
           order,
           keyword,
-          amount
+          amount,
         );
       }
     })
     .catch((err) => {
-      helpersProduct.response(res, 500, "Server error", null, err);
+      helpersProduct.response(res, 500, 'Server error', null, err);
     });
 };
 
 // Show
 const showProduct = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params.id;
+
   modelProduct
     .showProduct(id)
     .then((product) => {
       res.json({
         message: `success get data with id = ${id}`,
-        product: product,
+        product,
       });
     })
     .catch((err) => {
@@ -115,43 +114,40 @@ const showProduct = (req, res) => {
 
 // Update
 const updateProduct = (req, res) => {
+  const { id } = req.params;
+  const {
+    productName,
+    color,
+    size,
+    price,
+    quantity,
+    status,
+    description,
+    image,
+  } = req.body;
   // Validation
   const statusUp = status.toUpperCase();
   if (
-    (product_name == "") |
-    (color == "") |
-    (size == "") |
-    (price == "") |
-    (quantity == "") |
-    isNaN(quantity) |
-    (status == "") |
-    (statusUp !== "NEW") |
-    (statusUp !== "FORMER") |
-    (description == "") |
-    (image == "")
+    (productName === '')
+    || (color === '')
+    || (size === '')
+    || (price === '')
+    || (quantity === '')
+    || isNaN(quantity)
+    || (status === '')
+    || (statusUp !== 'NEW')
+    || (statusUp !== 'FORMER')
+    || (description === '')
+    || (image === '')
   ) {
     helpersProduct.response(
       res,
       400,
-      "Bad Request, you inserted a wrong input"
+      'Bad Request, you inserted a wrong input',
     );
-  }
-
-  // Validation success
-  else {
-    const id = req.params.id;
-    const {
-      product_name,
-      color,
-      size,
-      price,
-      quantity,
-      status,
-      description,
-      image,
-    } = req.body;
+  } else {
     const data = {
-      product_name,
+      productName,
       color,
       size,
       price,
@@ -170,18 +166,18 @@ const updateProduct = (req, res) => {
           200,
           `Successfully updated data product with id ${id}`,
           result,
-          null
+          null,
         );
       })
       .catch((err) => {
-        helpersProduct.response(res, 500, "Server error", null, err);
+        helpersProduct.response(res, 500, 'Server error', null, err);
       });
   }
 };
 
 // Delete
 const deleteProduct = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   modelProduct
     .deleteProduct(id)
     .then((result) => {
@@ -190,11 +186,11 @@ const deleteProduct = (req, res) => {
         200,
         `Successfully delete product with id = ${id}`,
         result,
-        null
+        null,
       );
     })
     .catch((err) => {
-      helpersProduct.response(res, 500, "Server error", null, err);
+      helpersProduct.response(res, 500, 'Server error', null, err);
     });
 };
 

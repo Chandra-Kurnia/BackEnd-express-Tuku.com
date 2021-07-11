@@ -1,6 +1,6 @@
 Insert product
 {
-    "product_name": "batik solo",
+    "productName": "batik solo",
     "color": "LLL",
     "size": "6",
     "price": "690000",
@@ -24,8 +24,8 @@ sign up seller
     "name": "Chandra Kurnia",
     "email": "candraKqurniawan@gmail.com",
     "pass": "kucing_kucing",
-    "phone_number": "0929209192"
-    "store_name": "monoShop"
+    "phoneNumber": "0929209192"
+    "storeName": "monoShop"
 }
 
 User Update
@@ -34,8 +34,8 @@ User Update
     "email": "candraKqurniawan@gmail.com",
     "pass": "kucing_kucing",
     "sex": "male",
-    "date_birth": "19",
-    "month_birth": "6",
-    "year_birth": "2002",
-    "phone_number": "0929209192"
+    "dateBirth": "19",
+    "monthBirth": "6",
+    "yearBirth": "2002",
+    "phoneNumber": "0929209192"
 }

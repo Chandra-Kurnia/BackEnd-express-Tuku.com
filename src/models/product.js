@@ -1,5 +1,4 @@
-const { response } = require("express");
-const conn = require("../config/db");
+const conn = require('../config/db');
 
 const getAllProduct = (order, keyword, limit, page) => {
   let limitStart = 0;
@@ -15,11 +14,11 @@ const getAllProduct = (order, keyword, limit, page) => {
   }
 
   // BaseQuery
-  let baseQuery = `SELECT * FROM products`;
+  let baseQuery = 'SELECT * FROM products';
 
   //   Search
   if (keyword) {
-    baseQuery += ` WHERE product_name LIKE "%${keyword}%"`;
+    baseQuery += ` WHERE product_name LIKE '%${keyword}%'`;
   }
 
   //   Order
@@ -40,64 +39,56 @@ const getAllProduct = (order, keyword, limit, page) => {
   });
 };
 
-const createProduct = (data) => {
-  return new Promise((resolve, reject) => {
-    conn.query("INSERT INTO products SET ?", data, (err, result) => {
+const createProduct = (data) => new Promise((resolve, reject) => {
+  conn.query('INSERT INTO products SET ?', data, (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
+    }
+  });
+});
+
+const showProduct = (id) => new Promise((resolve, reject) => {
+  conn.query(
+    'SELECT * FROM products WHERE id_product=?',
+    id,
+    (err, result) => {
       if (!err) {
         resolve(result);
       } else {
         reject(err);
       }
-    });
-  });
-};
+    },
+  );
+});
 
-const showProduct = (id) => {
-  return new Promise((resolve, reject) => {
-    conn.query(
-      `SELECT * FROM products WHERE id_product=?`,
-      id,
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
+const updateProduct = (data, id) => new Promise((resolve, reject) => {
+  conn.query(
+    'UPDATE products SET ? WHERE id_product = ?',
+    [data, id],
+    (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
       }
-    );
-  });
-};
+    },
+  );
+});
 
-const updateProduct = (data, id) => {
-  return new Promise((resolve, reject) => {
-    conn.query(
-      `UPDATE products SET ? WHERE id_product = ?`,
-      [data, id],
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
+const deleteProduct = (id) => new Promise((resolve, reject) => {
+  conn.query(
+    `DELETE FROM products WHERE id_product = ${id}`,
+    (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
       }
-    );
-  });
-};
-
-const deleteProduct = (id) => {
-  return new Promise((resolve, reject) => {
-    conn.query(
-      `DELETE FROM products WHERE id_product = ${id}`,
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
-      }
-    );
-  });
-};
+    },
+  );
+});
 
 module.exports = {
   getAllProduct,

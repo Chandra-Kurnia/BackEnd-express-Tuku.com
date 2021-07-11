@@ -1,4 +1,4 @@
-const response = (res, status, message, data, err, order, keyword, amount, totalPage) => {
+const response = (res, status, message, data, err, order, keyword, amount) => {
   res.json({
     message,
     status,
