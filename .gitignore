@@ -2,5 +2,5 @@ node_modules/
 logs/
 .env
 .gitignore
-.json_template
-.eslintrc
+.json_template.txt
+.eslintrc.js
