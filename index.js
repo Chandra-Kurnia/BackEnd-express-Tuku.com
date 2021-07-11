@@ -4,12 +4,13 @@ const morgan = require('morgan')
 const userRouter = require('./src/routes/users')
 const productRouter = require('./src/routes/product')
 const createError = require('http-errors')
+const cors = require('cors')
 
 // middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(morgan('dev'))
-
+app.use(cors())
 
 app.use('/users', userRouter)
 app.use('/product', productRouter)
