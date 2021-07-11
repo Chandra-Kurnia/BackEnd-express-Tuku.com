@@ -7,6 +7,7 @@ const cors = require('cors');
 const createError = require('http-errors');
 const userRouter = require('./src/routes/users');
 const productRouter = require('./src/routes/product');
+const storeRouter = require('./src/routes/store');
 
 // middleware
 app.use(express.json());
@@ -16,6 +17,7 @@ app.use(cors());
 
 app.use('/users', userRouter);
 app.use('/product', productRouter);
+app.use('/store', storeRouter);
 
 app.use('*', (req, res, next) => {
   const error = new createError.NotFound();

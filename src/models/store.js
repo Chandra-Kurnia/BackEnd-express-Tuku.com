@@ -1,6 +1,16 @@
 const conn = require('../config/db');
 
-const getAllProduct = (order, keyword, limit, page) => {
+const createStore = (data) => new Promise((resolve, reject) => {
+  conn.query('INSERT INTO store SET ?', data, (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
+    }
+  });
+});
+
+const getAllStore = (order, keyword, limit, page) => {
   let limitStart = 0;
   let defaultLimit = 5;
   // Limit
@@ -14,11 +24,11 @@ const getAllProduct = (order, keyword, limit, page) => {
   }
 
   // BaseQuery
-  let baseQuery = 'SELECT * FROM products';
+  let baseQuery = 'SELECT * FROM store';
 
   //   Search
   if (keyword) {
-    baseQuery += ` WHERE product_name LIKE '%${keyword}%'`;
+    baseQuery += ` WHERE store_name LIKE '%${keyword}%'`;
   }
 
   //   Order
@@ -39,19 +49,9 @@ const getAllProduct = (order, keyword, limit, page) => {
   });
 };
 
-const createProduct = (data) => new Promise((resolve, reject) => {
-  conn.query('INSERT INTO products SET ?', data, (err, result) => {
-    if (!err) {
-      resolve(result);
-    } else {
-      reject(err);
-    }
-  });
-});
-
-const showProduct = (id) => new Promise((resolve, reject) => {
+const showStore = (id) => new Promise((resolve, reject) => {
   conn.query(
-    'SELECT * FROM products WHERE id_product= ?', id, (err, result) => {
+    'SELECT * FROM store WHERE store_id = ?', id, (err, result) => {
       if (!err) {
         resolve(result);
       } else {
@@ -61,9 +61,9 @@ const showProduct = (id) => new Promise((resolve, reject) => {
   );
 });
 
-const updateProduct = (data, id) => new Promise((resolve, reject) => {
+const updateStore = (data, id) => new Promise((resolve, reject) => {
   conn.query(
-    'UPDATE products SET ? WHERE id_product = ?',
+    'UPDATE store SET ? WHERE store_id = ?',
     [data, id],
     (err, result) => {
       if (!err) {
@@ -75,9 +75,9 @@ const updateProduct = (data, id) => new Promise((resolve, reject) => {
   );
 });
 
-const deleteProduct = (id) => new Promise((resolve, reject) => {
+const deleteStore = (id) => new Promise((resolve, reject) => {
   conn.query(
-    `DELETE FROM products WHERE id_product = ${id}`,
+    `DELETE FROM store WHERE store_id = ${id}`,
     (err, result) => {
       if (!err) {
         resolve(result);
@@ -89,9 +89,9 @@ const deleteProduct = (id) => new Promise((resolve, reject) => {
 });
 
 module.exports = {
-  getAllProduct,
-  createProduct,
-  showProduct,
-  updateProduct,
-  deleteProduct,
+  createStore,
+  getAllStore,
+  showStore,
+  updateStore,
+  deleteStore,
 };

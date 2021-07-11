@@ -15,19 +15,15 @@ const createProduct = (req, res) => {
     image,
   } = req.body;
   // Validation
-  const statusUp = status.toUpperCase();
   if (
-    (productName === '')
-    || (color === '')
-    || (size === '')
-    || (price === '')
-    || (quantity === '')
-    || isNaN(quantity)
-    || (status === '')
-    || (statusUp !== 'NEW')
-    || (statusUp !== 'FORMER')
-    || (description === '')
-    || (image === '')
+    (!productName)
+    || (!color)
+    || (!size)
+    || (!price)
+    || (!quantity)
+    || (!status)
+    || (!description)
+    || (!image)
   ) {
     helpersProduct.response(
       res,
@@ -95,20 +91,19 @@ const getAllProduct = (req, res) => {
 
 // Show
 const showProduct = (req, res) => {
-  const { id } = req.params.id;
-
+  const { id } = req.params;
   modelProduct
     .showProduct(id)
     .then((product) => {
-      res.json({
-        message: `success get data with id = ${id}`,
-        product,
-      });
+      const amount = product.length;
+      if (amount < 1) {
+        helpersProduct.response(res, 404, 'Data Not Found', null);
+      } else {
+        helpersProduct.response(res, 200, `succes get data with id = ${id}`, product);
+      }
     })
     .catch((err) => {
-      res.json({
-        message: err,
-      });
+      helpersProduct.response(res, 500, 'Internal server error', null, err);
     });
 };
 
@@ -126,19 +121,15 @@ const updateProduct = (req, res) => {
     image,
   } = req.body;
   // Validation
-  const statusUp = status.toUpperCase();
   if (
-    (productName === '')
-    || (color === '')
-    || (size === '')
-    || (price === '')
-    || (quantity === '')
-    || isNaN(quantity)
-    || (status === '')
-    || (statusUp !== 'NEW')
-    || (statusUp !== 'FORMER')
-    || (description === '')
-    || (image === '')
+    (!productName)
+    || (!color)
+    || (!size)
+    || (!price)
+    || (!quantity)
+    || (!status)
+    || (!description)
+    || (!image)
   ) {
     helpersProduct.response(
       res,
@@ -146,8 +137,9 @@ const updateProduct = (req, res) => {
       'Bad Request, you inserted a wrong input',
     );
   } else {
+    // Validation success
     const data = {
-      productName,
+      product_name: productName,
       color,
       size,
       price,

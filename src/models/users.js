@@ -1,7 +1,7 @@
 const conn = require('../config/db');
 
 const getAllUser = () => new Promise((resolve, reject) => {
-  conn.query('SELECT * FROM users', (error, result) => {
+  conn.query('SELECT * FROM users EXCEPT', (error, result) => {
     if (!error) {
       resolve(result);
     } else {
@@ -10,25 +10,18 @@ const getAllUser = () => new Promise((resolve, reject) => {
   });
 });
 
-const createUser = (data) => new Promise((resolve, reject) => {
-  // if seller create new store
-  if (data.roles === 'seller') {
-    const dataStore = {
-      store_id: data.store_id,
-      store_name: data.store_name,
-    };
-    conn.query('INSERT INTO store SET ?', dataStore);
-  }
+const showUser = (id) => new Promise((resolve, reject) => {
+  conn.query('SELECT * FROM users WHERE id_user = ?', id, (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
+    }
+  });
+});
 
-  const dataUser = {
-    roles: data.roles,
-    name: data.name,
-    email: data.email,
-    password: data.email,
-    phone_number: data.phone_number,
-    store_id: data.store_id,
-  };
-  conn.query('INSERT INTO users SET ?', dataUser, (err, result) => {
+const createUser = (data) => new Promise((resolve, reject) => {
+  conn.query('INSERT INTO users SET ?', data, (err, result) => {
     if (!err) {
       resolve(result);
     } else {
@@ -66,4 +59,5 @@ module.exports = {
   createUser,
   updateUser,
   deleteUsers,
+  showUser,
 };
