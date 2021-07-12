@@ -85,19 +85,16 @@ const showStore = (req, res) => {
 const updateStore = (req, res) => {
   const { id } = req.params;
   const {
-    owner, email, phoneNumber, storeName, pass, storeDesc,
+    owner, email, phoneNumber, storeName, storeDesc,
   } = req.body;
   if (!owner || !email || !phoneNumber || !storeName || !storeDesc) {
     helpersProduct.response(res, 400, 'Bad Request, you inserted a wrong input !');
   } else {
-    // Password hash
-    const password = pass;
     const data = {
       owner,
       email,
       phone_number: phoneNumber,
       store_name: storeName,
-      password,
       store_desc: storeDesc,
       updated_at: new Date(),
     };
