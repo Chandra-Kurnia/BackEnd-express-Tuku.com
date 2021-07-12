@@ -14,7 +14,7 @@ const getAllProduct = (order, keyword, limit, page) => {
   }
 
   // BaseQuery
-  let baseQuery = 'SELECT * FROM products';
+  let baseQuery = 'SELECT products.id_product, products.product_name, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category';
 
   //   Search
   if (keyword) {
