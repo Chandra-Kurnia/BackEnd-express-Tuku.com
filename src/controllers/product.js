@@ -69,7 +69,7 @@ const getAllProduct = (req, res) => {
     .getAllProduct(order, keyword, limit, page)
     .then((dataProduct) => {
       const amount = dataProduct.length;
-      if ((amount == null) || (amount === '')) {
+      if (amount < 1) {
         helpersProduct.response(res, 404, 'Data Not Found', null);
       } else {
         helpersProduct.response(

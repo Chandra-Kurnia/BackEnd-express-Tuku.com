@@ -15,8 +15,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 app.use(cors());
 
-app.use('/users', userRouter);
 app.use('/product', productRouter);
+app.use('/users', userRouter);
 app.use('/store', storeRouter);
 
 app.use('*', (req, res, next) => {

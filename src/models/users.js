@@ -1,7 +1,7 @@
 const conn = require('../config/db');
 
 const getAllUser = () => new Promise((resolve, reject) => {
-  conn.query('SELECT * FROM users EXCEPT', (error, result) => {
+  conn.query('SELECT * FROM users', (error, result) => {
     if (!error) {
       resolve(result);
     } else {

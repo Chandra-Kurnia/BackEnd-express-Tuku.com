@@ -4,3 +4,4 @@ logs/
 .gitignore
 json_template.txt
 .eslintrc.js
+.check.js

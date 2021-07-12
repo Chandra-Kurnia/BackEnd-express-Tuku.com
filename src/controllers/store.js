@@ -5,30 +5,35 @@ const createStore = (req, res) => {
   const {
     owner, email, phoneNumber, storeName, pass,
   } = req.body;
-  //   pw hash
-  const password = pass;
-  const data = {
-    owner,
-    email,
-    phone_number: phoneNumber,
-    store_name: storeName,
-    password,
-  };
+  if (!owner || !email || !phoneNumber || !pass || !storeName) {
+    helpersProduct.response(res, 400, 'Bad Request, your inserted a wrong input');
+  } else {
+    // Validation succes
+    //   pw hash
+    const password = pass;
+    const data = {
+      owner,
+      email,
+      phone_number: phoneNumber,
+      store_name: storeName,
+      password,
+    };
 
-  modelStore
-    .createStore(data)
-    .then(() => {
-      helpersProduct.response(
-        res,
-        200,
-        'Data successfully inserted',
-        data,
-        null,
-      );
-    })
-    .catch((err) => {
-      helpersProduct.response(res, 500, 'Server error', null, err);
-    });
+    modelStore
+      .createStore(data)
+      .then(() => {
+        helpersProduct.response(
+          res,
+          200,
+          'Data successfully inserted',
+          data,
+          null,
+        );
+      })
+      .catch((err) => {
+        helpersProduct.response(res, 500, 'Server error', null, err);
+      });
+  }
 };
 
 const getAllStore = (req, res) => {
@@ -82,31 +87,35 @@ const updateStore = (req, res) => {
   const {
     owner, email, phoneNumber, storeName, pass, storeDesc,
   } = req.body;
-  // Password hash
-  const password = pass;
-  const data = {
-    owner,
-    email,
-    phone_number: phoneNumber,
-    store_name: storeName,
-    password,
-    store_desc: storeDesc,
-    updated_at: new Date(),
-  };
-  modelStore
-    .updateStore(data, id)
-    .then((result) => {
-      helpersProduct.response(
-        res,
-        200,
-        `Successfully updated data store with id ${id}`,
-        result,
-        null,
-      );
-    })
-    .catch((err) => {
-      helpersProduct.response(res, 500, 'Server error', null, err);
-    });
+  if (!owner || !email || !phoneNumber || !storeName || !storeDesc) {
+    helpersProduct.response(res, 400, 'Bad Request, you inserted a wrong input !');
+  } else {
+    // Password hash
+    const password = pass;
+    const data = {
+      owner,
+      email,
+      phone_number: phoneNumber,
+      store_name: storeName,
+      password,
+      store_desc: storeDesc,
+      updated_at: new Date(),
+    };
+    modelStore
+      .updateStore(data, id)
+      .then((result) => {
+        helpersProduct.response(
+          res,
+          200,
+          `Successfully updated data store with id ${id}`,
+          result,
+          null,
+        );
+      })
+      .catch((err) => {
+        helpersProduct.response(res, 500, 'Server error', null, err);
+      });
+  }
 };
 
 const deleteStore = (req, res) => {
