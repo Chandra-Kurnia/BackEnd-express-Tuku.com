@@ -27,7 +27,7 @@
 ### Postman Docs
 **1. Create**
 
-<img src="/src/img/readme/c-user.png">
+<img src="https://github.com/Chandra-Kurnia/CRUD-node.js/blob/main/src/img/readme/c-user.png">
 
 **2. Read**
 
