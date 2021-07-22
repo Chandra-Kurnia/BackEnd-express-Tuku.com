@@ -1,8 +1,6 @@
 const bcrypt = require('bcrypt');
 const userModels = require('../models/users');
-// const { encrypt, decrypt } = require('../helpers/pw_hash');
 const helperProducts = require('../helpers/product');
-
 const saltRounds = 10;
 
 const getAllUser = (req, res) => {

@@ -8,6 +8,7 @@ router
   .get('/', ProductController.getAllProduct)
   .post('/', ProductController.createProduct)
   .get('/show/:id', ProductController.showProduct)
+  .get('/category/:category', ProductController.showCategory)
   .put('/:id', ProductController.updateProduct)
   .delete('/:id', ProductController.deleteProduct);
 

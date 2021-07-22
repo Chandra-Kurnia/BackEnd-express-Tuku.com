@@ -1,11 +1,13 @@
-const modelProduct = require('../models/product');
-const helpersProduct = require('../helpers/product');
+const modelProduct = require("../models/product");
+const helpersProduct = require("../helpers/product");
 
 // create product
 const createProduct = (req, res) => {
   // get request
   const {
     productName,
+    store_id,
+    category,
     color,
     size,
     price,
@@ -16,24 +18,26 @@ const createProduct = (req, res) => {
   } = req.body;
   // Validation
   if (
-    (!productName)
-    || (!color)
-    || (!size)
-    || (!price)
-    || (!quantity)
-    || (!status)
-    || (!description)
-    || (!image)
+    !productName ||
+    !color ||
+    !size ||
+    !price ||
+    !quantity ||
+    !status ||
+    !description ||
+    !image
   ) {
     helpersProduct.response(
       res,
       400,
-      'Bad Request, you inserted a wrong input',
+      "Bad Request, you inserted a wrong input"
     );
   } else {
     // Validation succes
     const data = {
       product_name: productName,
+      store_id,
+      category,
       color,
       size,
       price,
@@ -48,44 +52,48 @@ const createProduct = (req, res) => {
         helpersProduct.response(
           res,
           200,
-          'Data successfully inserted',
+          "Data successfully inserted",
           data,
-          null,
+          null
         );
+        console.log("Success");
       })
       .catch((err) => {
-        helpersProduct.response(res, 500, 'Server error', null, err);
+        helpersProduct.response(res, 500, "Server error", null, err);
+        console.log("Error : " + err);
       });
   }
 };
 
 // read product
 const getAllProduct = (req, res) => {
-  const {
-    order, keyword, limit, page,
-  } = req.query;
-
+  let lengthAllProduct = '';
+  const { order, orderBy, keyword, limit, page } = req.query;
+  modelProduct.countProduct().then((amountAlLProduct) => {
+    lengthAllProduct = amountAlLProduct.length;
+  })
+  .catch(err => {})
   modelProduct
-    .getAllProduct(order, keyword, limit, page)
+    .getAllProduct(order, orderBy, keyword, limit, page)
     .then((dataProduct) => {
       const amount = dataProduct.length;
       if (amount < 1) {
-        helpersProduct.response(res, 404, 'Data Not Found', null);
+        helpersProduct.response(res, 404, "Data Not Found", null);
       } else {
         helpersProduct.response(
           res,
           200,
-          'all data successfully loaded',
+          "all data successfully loaded",
           dataProduct,
           null,
           order,
           keyword,
-          amount,
+          lengthAllProduct,
         );
       }
     })
     .catch((err) => {
-      helpersProduct.response(res, 500, 'Server error', null, err);
+      helpersProduct.response(res, 500, "Server error", null, err);
     });
 };
 
@@ -97,13 +105,41 @@ const showProduct = (req, res) => {
     .then((product) => {
       const amount = product.length;
       if (amount < 1) {
-        helpersProduct.response(res, 404, 'Data Not Found', null);
+        helpersProduct.response(res, 404, "Data Not Found", null);
       } else {
-        helpersProduct.response(res, 200, `succes get data with id = ${id}`, product);
+        helpersProduct.response(
+          res,
+          200,
+          `succes get data with id = ${id}`,
+          product
+        );
       }
     })
     .catch((err) => {
-      helpersProduct.response(res, 500, 'Internal server error', null, err);
+      helpersProduct.response(res, 500, "Internal server error", null, err);
+    });
+};
+
+// Show
+const showCategory = (req, res) => {
+  const { category } = req.params;
+  modelProduct
+    .showCategory(category)
+    .then((product) => {
+      const amount = product.length;
+      if (amount < 1) {
+        helpersProduct.response(res, 404, "Data Not Found", null);
+      } else {
+        helpersProduct.response(
+          res,
+          200,
+          `succes get data with category = ${category}`,
+          product
+        );
+      }
+    })
+    .catch((err) => {
+      helpersProduct.response(res, 500, "Internal server error", null, err);
     });
 };
 
@@ -112,6 +148,8 @@ const updateProduct = (req, res) => {
   const { id } = req.params;
   const {
     productName,
+    store_id,
+    category,
     color,
     size,
     price,
@@ -122,24 +160,26 @@ const updateProduct = (req, res) => {
   } = req.body;
   // Validation
   if (
-    (!productName)
-    || (!color)
-    || (!size)
-    || (!price)
-    || (!quantity)
-    || (!status)
-    || (!description)
-    || (!image)
+    !productName ||
+    !color ||
+    !size ||
+    !price ||
+    !quantity ||
+    !status ||
+    !description ||
+    !image
   ) {
     helpersProduct.response(
       res,
       400,
-      'Bad Request, you inserted a wrong input',
+      "Bad Request, you inserted a wrong input"
     );
   } else {
     // Validation success
     const data = {
       product_name: productName,
+      store_id,
+      category,
       color,
       size,
       price,
@@ -153,16 +193,18 @@ const updateProduct = (req, res) => {
     modelProduct
       .updateProduct(data, id)
       .then((result) => {
+        console.log("Success");
         helpersProduct.response(
           res,
           200,
           `Successfully updated data product with id ${id}`,
           result,
-          null,
+          null
         );
       })
       .catch((err) => {
-        helpersProduct.response(res, 500, 'Server error', null, err);
+        console.log(err);
+        helpersProduct.response(res, 500, "Server error", null, err);
       });
   }
 };
@@ -178,11 +220,11 @@ const deleteProduct = (req, res) => {
         200,
         `Successfully delete product with id = ${id}`,
         result,
-        null,
+        null
       );
     })
     .catch((err) => {
-      helpersProduct.response(res, 500, 'Server error', null, err);
+      helpersProduct.response(res, 500, "Server error", null, err);
     });
 };
 
@@ -193,4 +235,5 @@ module.exports = {
   showProduct,
   updateProduct,
   deleteProduct,
+  showCategory,
 };
