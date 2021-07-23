@@ -6,10 +6,8 @@ const cors = require('cors');
 require('dotenv').config();
 // eslint-disable-next-line import/no-extraneous-dependencies
 const createError = require('http-errors');
-const userRouter = require('./src/routes/users');
-const productRouter = require('./src/routes/product');
 const storeRouter = require('./src/routes/store');
-// const setCors = require('./src/middleware/cors');
+const v1 = require('./src/routes/v1')
 
 // middleware
 app.use(express.json());
@@ -17,9 +15,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 app.use(cors());
 
-app.use('/product', productRouter);
-app.use('/users', userRouter);
 app.use('/store', storeRouter);
+app.use('/v1', v1);
 
 app.use('*', (req, res, next) => {
   const error = new createError.NotFound();

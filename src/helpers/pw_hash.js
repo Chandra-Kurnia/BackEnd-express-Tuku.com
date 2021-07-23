@@ -1,29 +1,18 @@
-const crypto = require('crypto');
+const bcrypt = require("bcrypt");
 
-const algorithm = 'aes-256-ctr';
-const secretKey = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3';
-// const iv = crypto.randomBytes(16);
-
-const encrypt = (text) => {
-  const cipher = crypto.createCipheriv(algorithm, secretKey);
-
-  const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
-
-  return {
-    iv: iv.toString('hex'),
-    content: encrypted.toString('hex'),
-  };
+function encrypt(textPw){
+  return bcrypt.hash(textPw, 10, (err, hash) => {
+    return hash;
+  });
 };
 
-const decrypt = (hash) => {
-  const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.content, 'hex'));
-
-  const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()]);
-
-  return decrpyted.toString();
+const compare = (textPw, encryptPw) => {
+  bcrypt.compare(textPw, encryptPw, (err, result) => {
+    result;
+  });
 };
 
 module.exports = {
   encrypt,
-  decrypt,
+  compare,
 };
