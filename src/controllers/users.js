@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const userModels = require("../models/users");
+const helperEmail = require('../helpers/email')
 const helperProducts = require("../helpers/product");
 const jwt = require("jsonwebtoken");
 
@@ -148,8 +149,7 @@ const login = async (req, res, next) => {
     console.log("error - wrong roles");
   }
 
-  await userModels
-    .findEmail(email, role)
+  await helperEmail.findEmail(email, role)
     .then((result) => {
       const user = result[0];
       if (!user) {

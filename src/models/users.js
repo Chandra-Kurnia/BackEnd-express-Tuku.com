@@ -59,25 +59,10 @@ const deleteUsers = (id) =>
     });
   });
 
-const findEmail = (email, role) =>
-  new Promise((resolve, reject) => {
-    conn.query(
-      `SELECT * FROM ${role} WHERE email = ?`,email,
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
-      }
-    );
-  });
-
 module.exports = {
   getAllUser,
   createUser,
   updateUser,
   deleteUsers,
   showUser,
-  findEmail,
 };

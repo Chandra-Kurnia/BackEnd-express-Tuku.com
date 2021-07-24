@@ -12,6 +12,7 @@ const createStore = (req, res) => {
     );
   } else {
     // Validation succes
+    
     bcrypt.hash(pass, 10, (err, hash) => {
       const password = hash;
       const data = {
