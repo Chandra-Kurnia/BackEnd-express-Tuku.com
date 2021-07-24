@@ -52,8 +52,7 @@ const countProduct = () => new Promise((resolve, reject) => {
 
 const createProduct = (data) =>
   new Promise((resolve, reject) => {
-    console.log(data);
-    conn.query("INSERT INTO products SET ?", data, (err, result) => {
+    conn.query("INSER INTO products SET ?", data, (err, result) => {
       if (!err) {
         resolve(result);
       } else {

@@ -1,5 +1,6 @@
 const modelProduct = require("../models/product");
 const helpersProduct = require("../helpers/product");
+const fs = require('fs')
 
 // create product
 const createProduct = (req, res) => {
@@ -58,7 +59,11 @@ const createProduct = (req, res) => {
       })
       .catch((err) => {
         helpersProduct.response(res, 500, "Server error", null, err);
-        console.log("Error : " + err);
+        fs.unlink(`./src/assets/uploads/img/products/${req.file.filename}`, err => {
+          if(err){
+            console.log("Error unlink image product! --- " + err);
+          }
+        });
       });
   }
 };
