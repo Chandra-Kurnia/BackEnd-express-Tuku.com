@@ -21,7 +21,7 @@ const createUser = async (req, res) => {
     helperProducts.response(res, 400, "Bad request");
   } else {
     // Validation success
-    await userModels.findEmail(email, "users").then((result) => {
+    await helperEmail.findEmail(email, "users").then((result) => {
       if (result[0]) {
         res.json({
           message: "email sudah terdaftar",

@@ -1,5 +1,6 @@
 const modelStore = require("../models/store");
 const helpersProduct = require("../helpers/product");
+const helperEmail = require("../helpers/email");
 const bcrypt = require("bcrypt");
 
 const createStore = (req, res) => {
@@ -12,32 +13,39 @@ const createStore = (req, res) => {
     );
   } else {
     // Validation succes
-    
-    bcrypt.hash(pass, 10, (err, hash) => {
-      const password = hash;
-      const data = {
-        owner,
-        email,
-        phone_number: phoneNumber,
-        store_name: storeName,
-        password,
-      };
-
-      modelStore
-        .createStore(data)
-        .then(() => {
-          delete data.password;
-          helpersProduct.response(
-            res,
-            200,
-            "Data successfully inserted",
-            data,
-            null
-          );
-        })
-        .catch((err) => {
-          helpersProduct.response(res, 500, "Server error", null, err);
+    helperEmail.findEmail(email, "store").then((result) => {
+      if (result[0]) {
+        res.json({
+          message: "email sudah terdaftar",
         });
+      } else {
+        bcrypt.hash(pass, 10, (err, hash) => {
+          const password = hash;
+          const data = {
+            owner,
+            email,
+            phone_number: phoneNumber,
+            store_name: storeName,
+            password,
+          };
+
+          modelStore
+            .createStore(data)
+            .then(() => {
+              delete data.password;
+              helpersProduct.response(
+                res,
+                200,
+                "Data successfully inserted",
+                data,
+                null
+              );
+            })
+            .catch((err) => {
+              helpersProduct.response(res, 500, "Server error", null, err);
+            });
+        });
+      }
     });
   }
 };
