@@ -14,40 +14,48 @@ const getAllUser = (req, res) => {
     });
 };
 //
-const createUser = (req, res) => {
-  const { name, email, pass } = req.body;
+const createUser = async (req, res) => {
+  const { name, email, pass, roles } = req.body;
   if (!name || !email || !pass) {
     helperProducts.response(res, 400, "Bad request");
   } else {
     // Validation success
-    //   pw hash
-    bcrypt.hash(pass, 10, (err, hash) => {
-      const password = hash;
-      const data = {
-        name,
-        email,
-        password,
-      };
-      userModels
-        .createUser(data)
-        .then(() => {
-          helperProducts.response(
-            res,
-            201,
-            "Data successfully Created",
-            data,
-            null
-          );
-        })
-        .catch((error) => {
-          helperProducts.response(
-            res,
-            500,
-            "Server internal error",
-            null,
-            error
-          );
+    await userModels.findEmail(email, "users").then((result) => {
+      if (result[0]) {
+        res.json({
+          message: "email sudah terdaftar",
         });
+      } else {
+        //   pw hash
+        bcrypt.hash(pass, 10, (err, hash) => {
+          const password = hash;
+          const data = {
+            name,
+            email,
+            password,
+          };
+          userModels
+            .createUser(data)
+            .then(() => {
+              helperProducts.response(
+                res,
+                201,
+                "Data successfully Created",
+                data,
+                null
+              );
+            })
+            .catch((error) => {
+              helperProducts.response(
+                res,
+                500,
+                "Server internal error",
+                null,
+                error
+              );
+            });
+        });
+      }
     });
   }
 };
@@ -163,10 +171,10 @@ const login = async (req, res, next) => {
                 delete user.password;
                 user.token = token;
                 res.json({
-                  "message": "successfully created user token",
-                  "status": 200,
-                  "data" : user
-                })
+                  message: "successfully created user token",
+                  status: 200,
+                  data: user,
+                });
               }
             );
           }
