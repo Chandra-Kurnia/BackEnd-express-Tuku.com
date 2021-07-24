@@ -14,7 +14,6 @@ const createProduct = (req, res) => {
     quantity,
     status,
     description,
-    image,
   } = req.body;
   // Validation
   if (
@@ -24,8 +23,7 @@ const createProduct = (req, res) => {
     !price ||
     !quantity ||
     !status ||
-    !description ||
-    !image
+    !description
   ) {
     helpersProduct.response(
       res,
@@ -44,7 +42,7 @@ const createProduct = (req, res) => {
       quantity,
       status,
       description,
-      image,
+      image: `${req.file.filename}`
     };
     modelProduct
       .createProduct(data)

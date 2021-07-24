@@ -6,7 +6,6 @@ const cors = require('cors');
 require('dotenv').config();
 // eslint-disable-next-line import/no-extraneous-dependencies
 const createError = require('http-errors');
-const storeRouter = require('./src/routes/store');
 const v1 = require('./src/routes/v1')
 
 // middleware
@@ -15,8 +14,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 app.use(cors());
 
-app.use('/store', storeRouter);
 app.use('/v1', v1);
+app.use('/file', express.static('./src/assets/img/Products/'))
 
 app.use('*', (req, res, next) => {
   const error = new createError.NotFound();
