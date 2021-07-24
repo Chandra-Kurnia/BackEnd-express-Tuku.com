@@ -10,7 +10,7 @@ router
   .post("/", upload.single("image"), ProductController.createProduct)
   .get("/show/:id", ProductController.showProduct)
   .get("/category/:category", ProductController.showCategory)
-  .put("/:id", ProductController.updateProduct)
+  .put("/:id", upload.single("image"), ProductController.updateProduct)
   .delete("/:id", ProductController.deleteProduct);
 
 // Export

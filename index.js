@@ -15,7 +15,7 @@ app.use(morgan('dev'));
 app.use(cors());
 
 app.use('/v1', v1);
-app.use('/file', express.static('./src/assets/img/Products/'))
+app.use('/file', express.static(process.env.IMAGE_URL))
 
 app.use('*', (req, res, next) => {
   const error = new createError.NotFound();

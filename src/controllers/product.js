@@ -1,10 +1,8 @@
 const modelProduct = require("../models/product");
 const helpersProduct = require("../helpers/product");
-const fs = require('fs')
+const fs = require("fs");
 
-// create product
 const createProduct = (req, res) => {
-  // get request
   const {
     productName,
     store_id,
@@ -43,7 +41,7 @@ const createProduct = (req, res) => {
       quantity,
       status,
       description,
-      image: `${req.file.filename}`
+      image: `${req.file.filename}`,
     };
     modelProduct
       .createProduct(data)
@@ -59,23 +57,28 @@ const createProduct = (req, res) => {
       })
       .catch((err) => {
         helpersProduct.response(res, 500, "Server error", null, err);
-        fs.unlink(`./src/assets/uploads/img/products/${req.file.filename}`, err => {
-          if(err){
-            console.log("Error unlink image product! --- " + err);
+        fs.unlink(
+          `./src/assets/uploads/img/products/${req.file.filename}`,
+          (err) => {
+            if (err) {
+              console.log("Error unlink image product!" + err);
+            }
           }
-        });
+        );
       });
   }
 };
 
 // read product
 const getAllProduct = (req, res) => {
-  let lengthAllProduct = '';
+  let lengthAllProduct = "";
   const { order, orderBy, keyword, limit, page } = req.query;
-  modelProduct.countProduct().then((amountAlLProduct) => {
-    lengthAllProduct = amountAlLProduct.length;
-  })
-  .catch(err => {})
+  modelProduct
+    .countProduct()
+    .then((amountAlLProduct) => {
+      lengthAllProduct = amountAlLProduct.length;
+    })
+    .catch((err) => {});
   modelProduct
     .getAllProduct(order, orderBy, keyword, limit, page)
     .then((dataProduct) => {
@@ -91,7 +94,7 @@ const getAllProduct = (req, res) => {
           null,
           order,
           keyword,
-          lengthAllProduct,
+          lengthAllProduct
         );
       }
     })
@@ -159,7 +162,6 @@ const updateProduct = (req, res) => {
     quantity,
     status,
     description,
-    image,
   } = req.body;
   // Validation
   if (
@@ -169,45 +171,83 @@ const updateProduct = (req, res) => {
     !price ||
     !quantity ||
     !status ||
-    !description ||
-    !image
+    !description
   ) {
     helpersProduct.response(
       res,
       400,
       "Bad Request, you inserted a wrong input"
     );
+    fs.unlink(
+      `./src/assets/uploads/img/products/${req.file.filename}`,
+      (err) => {
+        if (err) {
+          console.log("Error unlink image product!" + err);
+        }
+      }
+    );
   } else {
     // Validation success
-    const data = {
-      product_name: productName,
-      store_id,
-      category,
-      color,
-      size,
-      price,
-      quantity,
-      status,
-      description,
-      image,
-      updated_at: new Date(),
-    };
-
     modelProduct
-      .updateProduct(data, id)
+      .showProduct(id)
       .then((result) => {
-        console.log("Success");
-        helpersProduct.response(
-          res,
-          200,
-          `Successfully updated data product with id ${id}`,
-          result,
-          null
+        const currentProduct = result[0];
+        fs.unlink(
+          `./src/assets/uploads/img/products/${currentProduct.image}`,
+          (err) => {
+            if (err) {
+              console.log("Error unlink old image product!" + err);
+            }
+          }
         );
+        const data = {
+          product_name: productName,
+          store_id: store_id,
+          category: category,
+          color,
+          size,
+          price,
+          quantity,
+          status,
+          description,
+          image: req.file.filename,
+          updated_at: new Date(),
+        };
+
+        modelProduct
+          .updateProduct(data, id)
+          .then((result) => {
+            helpersProduct.response(
+              res,
+              200,
+              `Successfully updated data product with id ${id}`,
+              result,
+              null
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+            helpersProduct.response(res, 500, "Server error", null, err);
+            fs.unlink(
+              `./src/assets/uploads/img/products/${req.file.filename}`,
+              (err) => {
+                if (err) {
+                  console.log("Error unlink image product!" + err);
+                }
+              }
+            );
+          });
       })
       .catch((err) => {
-        console.log(err);
-        helpersProduct.response(res, 500, "Server error", null, err);
+        console.log("Error! data not found " + err);
+        fs.unlink(
+          `./src/assets/uploads/img/products/${req.file.filename}`,
+          (err) => {
+            if (err) {
+              console.log("Error unlink image product!" + err);
+            }
+          }
+        );
       });
   }
 };
@@ -215,20 +255,31 @@ const updateProduct = (req, res) => {
 // Delete
 const deleteProduct = (req, res) => {
   const { id } = req.params;
-  modelProduct
-    .deleteProduct(id)
-    .then((result) => {
-      helpersProduct.response(
-        res,
-        200,
-        `Successfully delete product with id = ${id}`,
-        result,
-        null
-      );
-    })
-    .catch((err) => {
-      helpersProduct.response(res, 500, "Server error", null, err);
-    });
+  modelProduct.showProduct(id).then((result) => {
+    const dataProduct = result[0];
+    modelProduct
+      .deleteProduct(id)
+      .then((result) => {
+        helpersProduct.response(
+          res,
+          200,
+          `Successfully delete product with id = ${id}`,
+          result,
+          null
+        );
+        fs.unlink(
+          `./src/assets/uploads/img/products/${dataProduct.image}`,
+          (err) => {
+            if (err) {
+              console.log("Error unlink image product!" + err);
+            }
+          }
+        );
+      })
+      .catch((err) => {
+        helpersProduct.response(res, 500, "Server error", null, err);
+      });
+  });
 };
 
 // Export

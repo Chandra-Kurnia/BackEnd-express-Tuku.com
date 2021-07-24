@@ -5,7 +5,7 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     // console.log(file.size);
     if(file.mimetype === "image/png" | file.mimetype === "image/jpeg" | file.mimetype === "image/jpg"){
-      cb(null, "./src/assets/uploads/img/products");
+      cb(null, process.env.IMAGE_URL);
     }else{
       console.log("Wrong extension");
     }
