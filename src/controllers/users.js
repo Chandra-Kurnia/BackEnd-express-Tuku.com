@@ -163,20 +163,37 @@ const login = async (req, res, next) => {
               message: "password wrong",
             });
           } else {
-            jwt.sign(
-              { id: user.id_user, email, role },
-              process.env.JWT_SECRET_KEY,
-              { expiresIn: "24h" },
-              (err, token) => {
-                delete user.password;
-                user.token = token;
-                res.json({
-                  message: "successfully created user token",
-                  status: 200,
-                  data: user,
-                });
-              }
-            );
+            if(user.id_user){
+              jwt.sign(
+                { id: user.id_user, email, role },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: "24h" },
+                (err, token) => {
+                  delete user.password;
+                  user.token = token;
+                  res.json({
+                    message: "successfully created user token",
+                    status: 200,
+                    data: user,
+                  });
+                }
+              );
+            }else{
+              jwt.sign(
+                { id: user.store_id, email, role },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: "24h" },
+                (err, token) => {
+                  delete user.password;
+                  user.token = token;
+                  res.json({
+                    message: "successfully created user token",
+                    status: 200,
+                    data: user,
+                  });
+                }
+              );
+            }
           }
         });
       }
