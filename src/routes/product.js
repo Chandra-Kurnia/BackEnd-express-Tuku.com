@@ -11,7 +11,6 @@ router
   .get("/show/:id", ProductController.showProduct)
   .get("/category/:category", ProductController.showCategory)
   .put("/:id", upload.single("image"), ProductController.updateProduct)
-  .delete("/:id", ProductController.deleteProduct);
-
+  .delete("/:id", ProductController.deleteProduct)
 // Export
 module.exports = router;

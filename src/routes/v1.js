@@ -8,6 +8,10 @@ const storeRouter = require('./store');
 router
 .use('/product', productRouter)
 .use('/users', userRouter)
-.use('/store', storeRouter);
+.use('/store', storeRouter)
+.use('*', (req, res, next) => {
+    const error = new createError.NotFound();
+    next(error);
+  });
 
 module.exports = router

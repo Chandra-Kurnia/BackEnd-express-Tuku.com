@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 app.use(cors());
 
+
 app.use('/v1', v1);
 app.use('/file', express.static(process.env.IMAGE_URL))
 
@@ -24,7 +25,6 @@ app.use('*', (req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  console.error(err);
   res.status(err.status || 500).json({
     message: err.message || 'internal server Error',
   });

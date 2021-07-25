@@ -1,5 +1,6 @@
 const multer = require("multer");
 const { v4: uuidv4 } = require('uuid');
+const maxSize = 2 * 1024 * 1024;
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -8,6 +9,7 @@ const storage = multer.diskStorage({
       cb(null, process.env.IMAGE_URL);
     }else{
       console.log("Wrong extension");
+      console.log(file.size);
     }
   },
   filename: function (req, file, cb) {
@@ -15,6 +17,9 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({storage: storage})
+const upload = multer({
+  storage: storage,
+  limits: {fileSize: maxSize}
+})
 
 module.exports = upload

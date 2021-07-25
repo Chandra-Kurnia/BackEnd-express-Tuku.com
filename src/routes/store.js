@@ -15,7 +15,7 @@ router
   .put('/:id', storeController.updateStore)
   .put('/category/:id', categoryController.updateCategory)
   .delete('/category/:id', categoryController.deleteCategory)
-  .delete('/:id', storeController.deleteStore);
+  .delete('/:id', storeController.deleteStore)
 
 // Export
 module.exports = router;
