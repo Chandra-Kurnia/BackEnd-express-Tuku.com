@@ -1,6 +1,6 @@
-# Crud app uing node js & Express js
+# Crud app using node js & Express js
 
-### My App
+### App Builder
 
 1. Node Js
 2. Express Js
@@ -8,42 +8,70 @@
 
 ### Feature
 
-**USER & STORE**
+1. 
 
-1. Sign Up
-2. Update
-3. Delete
-4. Show
-5. Get all
+> PRODUCT
 
-**PRODUCT**
+>> Create
+POST > http://localhost:4000/v1/product/
 
-1. Menampilkan product dengan default limit 5
-2. Custom sort (ASC, DESC) berdasarkan waktu product dibuat
-3. Custom Limit
-4. Pagination
-5. Search
-6. CRUD (Create, Read, Update, Delete)
+| Field | Type | Rules |
+| ----------- | ----------- | ----------- |
+| ProductName | Text | Required
+| store_id | Number | Required
+| category | Number | Required
+| color | Text | Required
+| size | Enum | XS, S, M, L, XL
+| price | Number | Required
+| quantity | Number | Required
+| status | Enum | NEW, FORMER
+| description | Text | Required
+| image | File | Image, maxSize 5mb
+>> Read
+GET > http://localhost:4000/v1/product/
+>> Update
+PUT > http://localhost:4000/v1/product/idProduct
 
-### Postman Docs
+| Field | Type | Rules |
+| ----------- | ----------- | ----------- |
+| ProductName | Text | Optional
+| store_id | Number | Optional
+| category | Number | Optional
+| color | Text | Optional
+| size | Enum | XS, S, M, L, XL
+| price | Number | Optional
+| quantity | Number | Optional
+| status | Enum | NEW, FORMER
+| description | Text | Optional
+| image | File | Image, maxSize 5mb
+>> Delete
+DELETE > http://localhost:4000/v1/product/idProduct
+>> URL Parameter
+GET > http://localhost:4000/product?order=DESC&keyword=jaket
+> Order, Keyword, Limit, Page
 
-**1. Create**
+> USERS
 
-<img src="/src/img/readme/c-user.png">
+>> Sign up seller
+POST > http://localhost:4000/v1/store/
 
-**2. Read**
+| Field | Type | Rules |
+| ----------- | ----------- | ----------- |
+| Owner | Text | Required
+| Email | Email | Required
+| PhoneNumber | Text | Required
+| Storename | Text | Required
+| password | Password | Required
+>> Sign in seller
+POST > http://localhost:4000/v1/store/
 
-<img src="/src/img/readme/create-user.png">
-<img src="/src/img/readme/r-user.png">
+>> Sign up customer
+POST > http://localhost:4000/v1/users/
 
-**3. Show**
-
-<img src="/src/img/readme/s-user.png">
-
-**4. Update**
-
-<img src="/src/img/readme/u-user.png">
-
-**5. Delete**
-
-<img src="/src/img/readme/d-user.png">
+| Field | Type | Rules |
+| ----------- | ----------- | ----------- |
+| Name | Text | Required
+| Email | Email | Required
+| password | Password | Required
+>> Sign in customer
+POST > http://localhost:4000/v1/users/
