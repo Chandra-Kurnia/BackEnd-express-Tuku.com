@@ -4,14 +4,16 @@ const router = express.Router();
 const ProductController = require("../controllers/product");
 const upload = require("../middleware/multer");
 const auth = require('../middleware/auth')
+const redis = require('../middleware/redis')
 
 // Route target
 router
-  .get("/", ProductController.getAllProduct)
+  .get("/", redis.chaceAllProduct, ProductController.getAllProduct)
   .post("/", auth.authenticationAsSeller, upload.single("image"), ProductController.createProduct)
-  .get("/show/:id", ProductController.showProduct)
-  .get("/category/:category", ProductController.showCategory)
+  .get("/show/:id", redis.chaceProduct, ProductController.showProduct)
+  .get("/category/:category", redis.chaceProductByCateogry, ProductController.showCategory)
   .put("/:id", auth.authenticationAsSeller, upload.single("image"), ProductController.updateProduct)
-  .delete("/:id", ProductController.deleteProduct)
+  .delete("/:id", auth.authenticationAsSeller, ProductController.deleteProduct)
+  .get('/clear', redis.clearAllChaceProduct)
 // Export
 module.exports = router;

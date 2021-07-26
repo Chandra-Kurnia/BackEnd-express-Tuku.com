@@ -154,7 +154,7 @@ const login = async (req, res, next) => {
       const user = result[0];
       if (!user) {
         res.json({
-          a: "email tidak ditemukan",
+          message: "email tidak ditemukan",
         });
       } else {
         bcrypt.compare(password, user.password, (err, resCompare) => {

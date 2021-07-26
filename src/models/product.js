@@ -28,7 +28,7 @@ const getAllProduct = (order, OrderBy, keyword, limit, page) => {
   }
 
   baseQuery += ` LIMIT ${limitStart},${defaultLimit}`;
-
+  
   return new Promise((resolve, reject) => {
     conn.query(baseQuery, (err, result) => {
       if (!err) {

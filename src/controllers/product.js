@@ -1,5 +1,7 @@
 const modelProduct = require("../models/product");
 const helpersProduct = require("../helpers/product");
+const redis = require("redis");
+const client = redis.createClient();
 const fs = require("fs");
 
 const createProduct = (req, res) => {
@@ -86,6 +88,7 @@ const getAllProduct = (req, res) => {
       if (amount < 1) {
         helpersProduct.response(res, 404, "Data Not Found", null);
       } else {
+        client.set(`product-${order}-${orderBy}-${keyword}-${limit}-${page}`, JSON.stringify(dataProduct))
         helpersProduct.response(
           res,
           200,
@@ -113,6 +116,7 @@ const showProduct = (req, res) => {
       if (amount < 1) {
         helpersProduct.response(res, 404, "Data Not Found", null);
       } else {
+        client.set(`chaceProduct/${id}`, JSON.stringify(product));
         helpersProduct.response(
           res,
           200,
@@ -136,6 +140,7 @@ const showCategory = (req, res) => {
       if (amount < 1) {
         helpersProduct.response(res, 404, "Data Not Found", null);
       } else {
+        client.set(`chaceByCategory/${category}`, JSON.stringify(product))
         helpersProduct.response(
           res,
           200,
