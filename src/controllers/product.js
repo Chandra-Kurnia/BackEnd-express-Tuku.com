@@ -16,59 +16,41 @@ const createProduct = (req, res) => {
     status,
     description,
   } = req.body;
-  // Validation
-  if (
-    !productName ||
-    !color ||
-    !size ||
-    !price ||
-    !quantity ||
-    !status ||
-    !description
-  ) {
-    helpersProduct.response(
-      res,
-      400,
-      "Bad Request, you inserted a wrong input"
-    );
-  } else {
-    // Validation succes
-    const data = {
-      product_name: productName,
-      store_id,
-      category,
-      color,
-      size,
-      price,
-      quantity,
-      status,
-      description,
-      image: `${req.file.filename}`,
-    };
-    modelProduct
-      .createProduct(data)
-      .then(() => {
-        helpersProduct.response(
-          res,
-          200,
-          "Data successfully inserted",
-          data,
-          null
-        );
-        console.log("Success");
-      })
-      .catch((err) => {
-        helpersProduct.response(res, 500, "Server error", null, err);
-        fs.unlink(
-          `./src/assets/uploads/img/products/${req.file.filename}`,
-          (err) => {
-            if (err) {
-              console.log("Error unlink image product!" + err);
-            }
+  const data = {
+    product_name: productName,
+    store_id,
+    category,
+    color,
+    size,
+    price,
+    quantity,
+    status,
+    description,
+    image: req.file.filename,
+  };
+  modelProduct
+    .createProduct(data)
+    .then(() => {
+      helpersProduct.response(
+        res,
+        200,
+        "Data successfully inserted",
+        data,
+        null
+      );
+      console.log("Success");
+    })
+    .catch((err) => {
+      helpersProduct.response(res, 500, "Server error", null, err);
+      fs.unlink(
+        `./src/assets/uploads/img/products/${req.file.filename}`,
+        (err) => {
+          if (err) {
+            console.log("Error unlink image product!" + err);
           }
-        );
-      });
-  }
+        }
+      );
+    });
 };
 
 // read product
@@ -88,7 +70,10 @@ const getAllProduct = (req, res) => {
       if (amount < 1) {
         helpersProduct.response(res, 404, "Data Not Found", null);
       } else {
-        client.set(`product-${order}-${orderBy}-${keyword}-${limit}-${page}`, JSON.stringify(dataProduct))
+        client.set(
+          `product-${order}-${orderBy}-${limit}-${page}`,
+          JSON.stringify(dataProduct)
+        );
         helpersProduct.response(
           res,
           200,
@@ -140,7 +125,7 @@ const showCategory = (req, res) => {
       if (amount < 1) {
         helpersProduct.response(res, 404, "Data Not Found", null);
       } else {
-        client.set(`chaceByCategory/${category}`, JSON.stringify(product))
+        client.set(`chaceByCategory/${category}`, JSON.stringify(product));
         helpersProduct.response(
           res,
           200,
