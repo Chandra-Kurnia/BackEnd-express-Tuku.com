@@ -5,3 +5,4 @@ logs/
 json_template.txt
 .eslintrc.js
 .check.js
+.vscode/.myRedis.redis
