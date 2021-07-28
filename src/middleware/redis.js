@@ -7,9 +7,9 @@ client.on("error", (err) => {
 });
 
 const chaceAllProduct = (req, res, next) => {
-  const { order, orderBy, keyword, limit, page } = req.query;
+  const { order, orderBy, limit, page } = req.query;
   client.get(
-    `product-${order}-${orderBy}-${keyword}-${limit}-${page}`,
+    `product-${order}-${orderBy}-${limit}-${page}`,
     (err, result) => {
       if (result) {
         const data = JSON.parse(result);
@@ -20,7 +20,6 @@ const chaceAllProduct = (req, res, next) => {
           data,
           null,
           order,
-          keyword
         );
       } else {
         next();
