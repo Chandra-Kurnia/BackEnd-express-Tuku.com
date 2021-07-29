@@ -59,10 +59,21 @@ const deleteUsers = (id) =>
     });
   });
 
+const activate = (email) => new Promise((resolve, reject) => {
+  conn.query("UPDATE users SET status = 1 WHERE email = ? ", email, (err, result) => {
+    if(!err){
+      resolve(result);
+    }else{
+      reject(err);
+    }
+  })
+})
+
 module.exports = {
   getAllUser,
   createUser,
   updateUser,
   deleteUsers,
   showUser,
+  activate
 };

@@ -12,5 +12,6 @@ router
   .put("/:id", registerUpdateFieldRules(), validateResult, userController.updateUser)
   .delete("/:id", userController.deleteUser)
   // Auth
-  .post("/login", LoginFieldRules(), validateResult, userController.login);
+  .post("/login", LoginFieldRules(), validateResult, userController.login)
+  .get("/activation/:token", userController.activate)
 module.exports = router;

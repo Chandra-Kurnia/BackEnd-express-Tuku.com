@@ -1,8 +1,9 @@
 const bcrypt = require("bcrypt");
 const userModels = require("../models/users");
-const helperEmail = require('../helpers/email')
+const helperEmail = require("../helpers/email");
 const helperProducts = require("../helpers/product");
 const jwt = require("jsonwebtoken");
+const { sendEmail } = require("../helpers/activateAccount");
 
 const getAllUser = (req, res) => {
   userModels
@@ -38,10 +39,26 @@ const createUser = async (req, res) => {
           userModels
             .createUser(data)
             .then(() => {
+              jwt.sign(
+                { email: data.email },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: "24h" },
+                (err, token) => {
+                  if (err) {
+                    helperProducts.response(
+                      res,
+                      500,
+                      "failed create activate user token"
+                    );
+                  } else {
+                    sendEmail(data.email, token, "users");
+                  }
+                }
+              );
               helperProducts.response(
                 res,
                 201,
-                "Data successfully Created",
+                `Data successfully Created please activate your account, we send code verification to ${email}`,
                 data,
                 null
               );
@@ -149,7 +166,8 @@ const login = async (req, res, next) => {
     console.log("error - wrong roles");
   }
 
-  await helperEmail.findEmail(email, role)
+  await helperEmail
+    .findEmail(email, role)
     .then((result) => {
       const user = result[0];
       if (!user) {
@@ -163,7 +181,7 @@ const login = async (req, res, next) => {
               message: "password wrong",
             });
           } else {
-            if(user.id_user){
+            if (user.id_user) {
               jwt.sign(
                 { id: user.id_user, email, role },
                 process.env.JWT_SECRET_KEY,
@@ -178,7 +196,7 @@ const login = async (req, res, next) => {
                   });
                 }
               );
-            }else{
+            } else {
               jwt.sign(
                 { id: user.store_id, email, role },
                 process.env.JWT_SECRET_KEY,
@@ -205,6 +223,24 @@ const login = async (req, res, next) => {
     });
 };
 
+const activate = (req, res) => {
+  const { token } = req.params;
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      if (err.name === "TokenExpiredError") {
+        handleError(res, "Login failed", 401, "Your Token Is Expired");
+      } else if (err.name === "JsonWebTokenError") {
+        handleError(res, "Login failed", 401, "Your Token Is Invalid");
+      } else {
+        handleError(res, "Login failed", 401, "Your Token Isn't Active");
+      }
+    } else {
+      userModels.activate(decoded.email)
+      helperProducts.response(res, 200, "your data succesfully activated");
+    }
+  });
+};
+
 module.exports = {
   getAllUser,
   createUser,
@@ -212,4 +248,5 @@ module.exports = {
   deleteUser,
   showUser,
   login,
+  activate,
 };

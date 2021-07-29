@@ -1,14 +1,15 @@
-const conn = require('../config/db');
+const conn = require("../config/db");
 
-const createStore = (data) => new Promise((resolve, reject) => {
-  conn.query('INSERT INTO store SET ?', data, (err, result) => {
-    if (!err) {
-      resolve(result);
-    } else {
-      reject(err);
-    }
+const createStore = (data) =>
+  new Promise((resolve, reject) => {
+    conn.query("INSERT INTO store SET ?", data, (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
+      }
+    });
   });
-});
 
 const getAllStore = (order, keyword, limit, page) => {
   let limitStart = 0;
@@ -24,7 +25,7 @@ const getAllStore = (order, keyword, limit, page) => {
   }
 
   // BaseQuery
-  let baseQuery = 'SELECT * FROM store';
+  let baseQuery = "SELECT * FROM store";
 
   //   Search
   if (keyword) {
@@ -49,44 +50,57 @@ const getAllStore = (order, keyword, limit, page) => {
   });
 };
 
-const showStore = (id) => new Promise((resolve, reject) => {
-  conn.query(
-    'SELECT * FROM store WHERE store_id = ?', id, (err, result) => {
+const showStore = (id) =>
+  new Promise((resolve, reject) => {
+    conn.query("SELECT * FROM store WHERE store_id = ?", id, (err, result) => {
       if (!err) {
         resolve(result);
       } else {
         reject(err);
       }
-    },
-  );
-});
+    });
+  });
 
-const updateStore = (data, id) => new Promise((resolve, reject) => {
-  conn.query(
-    'UPDATE store SET ? WHERE store_id = ?',
-    [data, id],
-    (err, result) => {
-      if (!err) {
-        resolve(result);
-      } else {
-        reject(err);
+const updateStore = (data, id) =>
+  new Promise((resolve, reject) => {
+    conn.query(
+      "UPDATE store SET ? WHERE store_id = ?",
+      [data, id],
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(err);
+        }
       }
-    },
-  );
-});
+    );
+  });
 
-const deleteStore = (id) => new Promise((resolve, reject) => {
-  conn.query(
-    `DELETE FROM store WHERE store_id = ${id}`,
-    (err, result) => {
+const deleteStore = (id) =>
+  new Promise((resolve, reject) => {
+    conn.query(`DELETE FROM store WHERE store_id = ${id}`, (err, result) => {
       if (!err) {
         resolve(result);
       } else {
         reject(err);
       }
-    },
-  );
-});
+    });
+  });
+
+const activate = (email) =>
+  new Promise((resolve, reject) => {
+    conn.query(
+      "UPDATE store set status = 1 WHERE email = ?",
+      email,
+      (err, result) => {
+        if (!err) {
+          resolve(result);
+        } else {
+          reject(err);
+        }
+      }
+    );
+  });
 
 module.exports = {
   createStore,
@@ -94,4 +108,5 @@ module.exports = {
   showStore,
   updateStore,
   deleteStore,
+  activate
 };

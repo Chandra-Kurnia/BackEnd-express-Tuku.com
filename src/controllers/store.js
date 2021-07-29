@@ -2,6 +2,8 @@ const modelStore = require("../models/store");
 const helpersProduct = require("../helpers/product");
 const helperEmail = require("../helpers/email");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { sendEmail } = require("../helpers/activateAccount");
 
 const createStore = (req, res) => {
   const { owner, email, phoneNumber, storeName, pass } = req.body;
@@ -27,11 +29,28 @@ const createStore = (req, res) => {
             phone_number: phoneNumber,
             store_name: storeName,
             password,
+            status: 0,
           };
 
           modelStore
             .createStore(data)
             .then(() => {
+              jwt.sign(
+                { email: data.email },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: "24h" },
+                (err, token) => {
+                  if (err) {
+                    helperProducts.response(
+                      res,
+                      500,
+                      "failed create activate user token"
+                    );
+                  } else {
+                    sendEmail(data.email, token, "store");
+                  }
+                }
+              );
               delete data.password;
               helpersProduct.response(
                 res,
@@ -152,10 +171,29 @@ const deleteStore = (req, res) => {
     });
 };
 
+const activate = (req, res) => {
+  const { token } = req.params;
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      if (err.name === "TokenExpiredError") {
+        handleError(res, "Login failed", 401, "Your Token Is Expired");
+      } else if (err.name === "JsonWebTokenError") {
+        handleError(res, "Login failed", 401, "Your Token Is Invalid");
+      } else {
+        handleError(res, "Login failed", 401, "Your Token Isn't Active");
+      }
+    } else {
+      modelStore.activate(decoded.email)
+      helpersProduct.response(res, 200, "your data succesfully activated");
+    }
+  });
+};
+
 module.exports = {
   createStore,
   getAllStore,
   showStore,
   updateStore,
   deleteStore,
+  activate
 };

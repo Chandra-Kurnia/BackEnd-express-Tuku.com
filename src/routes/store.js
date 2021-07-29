@@ -17,7 +17,8 @@ router
   .put("/:id", createUpdateStoreRules(), validateResult, storeController.updateStore)
   .put("/category/:id", categoryController.updateCategory)
   .delete("/category/:id", categoryController.deleteCategory)
-  .delete("/:id", storeController.deleteStore);
+  .delete("/:id", storeController.deleteStore)
+  .get("/activation/:token", storeController.activate)
 
 // Export
 module.exports = router;
