@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const handleError = require("../helpers/handleError");
+const helperEmail = require("../helpers/email");
 
 const authentication = (req, res, next) => {
   const token = req.headers.authorization;

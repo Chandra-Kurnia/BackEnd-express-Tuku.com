@@ -4,6 +4,7 @@ const helperEmail = require("../helpers/email");
 const helperProducts = require("../helpers/product");
 const jwt = require("jsonwebtoken");
 const { sendEmail } = require("../helpers/activateAccount");
+const handleError = require('../helpers/handleError')
 
 const getAllUser = (req, res) => {
   userModels
@@ -40,7 +41,7 @@ const createUser = async (req, res) => {
             .createUser(data)
             .then(() => {
               jwt.sign(
-                { email: data.email },
+                { email: data.email, status: 0 },
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: "24h" },
                 (err, token) => {
@@ -163,7 +164,7 @@ const login = async (req, res, next) => {
   } else if (roles === "customer") {
     role += "users";
   } else {
-    console.log("error - wrong roles");
+    handleError(res, 'wrong roles')
   }
 
   await helperEmail
@@ -174,7 +175,13 @@ const login = async (req, res, next) => {
         res.json({
           message: "email tidak ditemukan",
         });
-      } else {
+        handleError(res, 'not found', 404, 'Your email not found')
+      }else if(user.status !== 1){
+        res.json({
+          message: "your account is not active, please activate it via email"
+        })
+      }
+      else {
         bcrypt.compare(password, user.password, (err, resCompare) => {
           if (!resCompare) {
             res.json({
@@ -183,7 +190,7 @@ const login = async (req, res, next) => {
           } else {
             if (user.id_user) {
               jwt.sign(
-                { id: user.id_user, email, role },
+                { id: user.id_user, email, role, status: 1 },
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: "24h" },
                 (err, token) => {
@@ -236,7 +243,7 @@ const activate = (req, res) => {
       }
     } else {
       userModels.activate(decoded.email)
-      helperProducts.response(res, 200, "your data succesfully activated");
+      helperProducts.response(res, 200, "your account succesfully activated");
     }
   });
 };

@@ -1,6 +1,8 @@
 const multer = require("multer");
 const { v4: uuidv4 } = require('uuid');
 const maxSize = 2 * 1024 * 1024;
+const handleError = require('../helpers/handleError')
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -8,8 +10,7 @@ const storage = multer.diskStorage({
     if(file.mimetype === "image/png" | file.mimetype === "image/jpeg" | file.mimetype === "image/jpg"){
       cb(null, process.env.IMAGE_URL);
     }else{
-      console.log("Wrong extension");
-      console.log(file.size);
+      console.log("wrong extension");
     }
   },
   filename: function (req, file, cb) {

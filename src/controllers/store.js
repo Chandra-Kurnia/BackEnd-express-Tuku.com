@@ -7,18 +7,10 @@ const { sendEmail } = require("../helpers/activateAccount");
 
 const createStore = (req, res) => {
   const { owner, email, phoneNumber, storeName, pass } = req.body;
-  if (!owner || !email || !phoneNumber || !pass || !storeName) {
-    helpersProduct.response(
-      res,
-      400,
-      "Bad Request, your inserted a wrong input"
-    );
-  } else {
-    // Validation succes
     helperEmail.findEmail(email, "store").then((result) => {
       if (result[0]) {
         res.json({
-          message: "email sudah terdaftar",
+          message: "email already exist",
         });
       } else {
         bcrypt.hash(pass, 10, (err, hash) => {
@@ -66,7 +58,6 @@ const createStore = (req, res) => {
         });
       }
     });
-  }
 };
 
 const getAllStore = (req, res) => {

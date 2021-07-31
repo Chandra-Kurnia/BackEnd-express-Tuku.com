@@ -4,8 +4,8 @@ const sendEmail = (toEmail, token, role) => {
   let transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-      user: "chandrakqurniawan2002@gmail.com", // generated ethereal user
-      pass: "kucinggila", // generated ethereal password
+      user: process.env.USER_EMAIL, // generated ethereal user
+      pass: process.env.USER_EMAIL_PW, // generated ethereal password
     },
   });
 
