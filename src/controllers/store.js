@@ -4,6 +4,7 @@ const helperEmail = require("../helpers/email");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sendEmail } = require("../helpers/activateAccount");
+const {response} = require('../helpers/response')
 
 const createStore = (req, res) => {
   const { owner, email, phoneNumber, storeName, pass } = req.body;
@@ -111,16 +112,8 @@ const showStore = (req, res) => {
 
 const updateStore = (req, res) => {
   const { id } = req.params;
-  const { owner, email, phoneNumber, storeName, storeDesc } = req.body;
-  if (!owner || !email || !phoneNumber || !storeName || !storeDesc) {
-    helpersProduct.response(
-      res,
-      400,
-      "Bad Request, you inserted a wrong input !"
-    );
-  } else {
+  const { email, phoneNumber, storeName, storeDesc } = req.body;
     const data = {
-      owner,
       email,
       phone_number: phoneNumber,
       store_name: storeName,
@@ -141,7 +134,6 @@ const updateStore = (req, res) => {
       .catch((err) => {
         helpersProduct.response(res, 500, "Server error", null, err);
       });
-  }
 };
 
 const deleteStore = (req, res) => {
@@ -167,11 +159,11 @@ const activate = (req, res) => {
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
     if (err) {
       if (err.name === "TokenExpiredError") {
-        handleError(res, "Login failed", 401, "Your Token Is Expired");
+        response(res, null, 400, [{msg: "Your token is Expired"}])
       } else if (err.name === "JsonWebTokenError") {
-        handleError(res, "Login failed", 401, "Your Token Is Invalid");
+        response(res, null, 400, [{msg: "Your token is invalid"}])
       } else {
-        handleError(res, "Login failed", 401, "Your Token Isn't Active");
+        response(res, null, 400, [{msg: "Your token is not active"}])
       }
     } else {
       modelStore.activate(decoded.email)

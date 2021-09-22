@@ -1,6 +1,6 @@
 # Crud app using node js & Express js
 
-### App Builder
+### `Tools & App`
 
 1. Node Js
 2. Express Js
@@ -9,9 +9,7 @@
 ### Feature
 
 
-> PRODUCT
-
->> Create
+### `Tools`
 POST > http://localhost:4000/v1/product/
 
 | Field | Type | Rules |

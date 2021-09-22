@@ -1,62 +1,54 @@
-const jwt = require("jsonwebtoken");
-const handleError = require("../helpers/handleError");
-const helperEmail = require("../helpers/email");
+const jwt = require('jsonwebtoken');
+const { response } = require('../helpers/response');
 
 const authentication = (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {
-    const error = new Error("server need token");
-    error.code = 401;
-    return next(error);
-  } else {
-    const result = token.split(" ")[1];
-    jwt.verify(result, process.env.JWT_SECRET_KEY, (err, decoded) => {
-      if (err) {
-        if (err.name === "TokenExpiredError") {
-          handleError(res, "Login failed", 401, "Your Token Is Expired");
-        } else if (err.name === "JsonWebTokenError") {
-          handleError(res, "Login failed", 401, "Your Token Is Invalid");
-        } else {
-          handleError(res, "Login failed", 401, "Your Token Isn't Active");
-        }
-      } else {
-        next();
-      }
-    });
+    return response(res, null, 400, [{ msg: 'Authorization error' }]);
   }
+  const result = token.split(' ')[1];
+  jwt.verify(result, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      if (err.name === 'TokenExpiredError') {
+        response(res, null, 400, [{ msg: 'Your token is Expired' }]);
+      } else if (err.name === 'JsonWebTokenError') {
+        response(res, null, 400, [{ msg: 'Your token is invalid' }]);
+      } else {
+        response(res, null, 400, [{ msg: 'Your token is not active' }]);
+      }
+    } else {
+      req.userLogin = decoded;
+      next();
+    }
+  });
 };
 
 const authenticationAsSeller = (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) {
-    const error = new Error("server need token");
-    error.code = 401;
-    return next(error);
-  } else {
-    const result = token.split(" ")[1];
-    jwt.verify(result, process.env.JWT_SECRET_KEY, (err, decoded) => {
-      if (err) {
-        if (err.name === "TokenExpiredError") {
-          handleError(res, "Login failed", 401, "Your Token Is Expired");
-        } else if (err.name === "JsonWebTokenError") {
-          handleError(res, "Login failed", 401, "Your Token Is Invalid");
-        } else {
-          handleError(res, "Login failed", 401, "Your Token Isn't Active");
-        }
-      } else {
-        if (decoded.role !== "store") {
-          handleError(
-            res,
-            "Acces denied",
-            403,
-            "You don't have permission for access this service"
-          );
-        } else {
-          next();
-        }
-      }
-    });
+    return response(res, null, 400, [{ msg: 'Authorization error' }]);
   }
+  const result = token.split(' ')[1];
+  jwt.verify(result, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      if (err.name === 'TokenExpiredError') {
+        response(res, null, 400, [{ msg: 'Your token is Expired' }]);
+      } else if (err.name === 'JsonWebTokenError') {
+        response(res, null, 400, [{ msg: 'Your token is invalid' }]);
+      } else {
+        response(res, null, 400, [{ msg: 'Your token is not active' }]);
+      }
+    } else if (decoded.role !== 'store') {
+      response(
+        res,
+        'Acces denied',
+        403,
+        "You don't have permission for access this service",
+      );
+    } else {
+      next();
+    }
+  });
 };
 
 module.exports = {

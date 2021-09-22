@@ -22,6 +22,21 @@ const registerUpdateFieldRules = () => [
     .withMessage("Password min 4 & max 15"),
 ];
 
+const UpdateFieldRules = () => [
+  body("name")
+    .notEmpty()
+    .withMessage("Name cannot empty")
+    .bail()
+    .isLength({ min: 4, max: 40 })
+    .withMessage("name min 4 & max 40"),
+  body("email")
+    .notEmpty()
+    .withMessage("Email cannot empty")
+    .bail()
+    .isEmail()
+    .withMessage("Your email is invalid"),
+];
+
 // Auth
 const LoginFieldRules = () => [
   body("email")
@@ -36,4 +51,5 @@ const LoginFieldRules = () => [
 module.exports = {
   LoginFieldRules,
   registerUpdateFieldRules,
+  UpdateFieldRules
 };

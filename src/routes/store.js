@@ -4,7 +4,7 @@ const router = express.Router();
 const storeController = require("../controllers/store");
 const categoryController = require("../controllers/categoryController");
 const validateResult = require("../validation/validationResult");
-const { createUpdateStoreRules } = require("../validation/storeValidate");
+const { createUpdateStoreRules, updateStoreRules } = require("../validation/storeValidate");
 
 // Route target
 router
@@ -14,7 +14,7 @@ router
   .get("/category", categoryController.getCategory)
   .get("/:id", storeController.showStore)
   .get("/category/:id", categoryController.showCategory)
-  .put("/:id", createUpdateStoreRules(), validateResult, storeController.updateStore)
+  .put("/:id", updateStoreRules(), validateResult, storeController.updateStore)
   .put("/category/:id", categoryController.updateCategory)
   .delete("/category/:id", categoryController.deleteCategory)
   .delete("/:id", storeController.deleteStore)

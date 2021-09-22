@@ -14,7 +14,8 @@ const sendEmail = (toEmail, token, role) => {
       from: process.env.USER_EMAIL, // sender address
       to: toEmail, // list of receivers
       subject: "verifikasi email", // Subject line
-      text: `Please activate your account with this link http://localhost:4000/v1/${role}/activation/${token}`, // plain text body
+      // text: `Please activate your account with this link http://localhost:4000/v1/${role}/activation/${token}`, // plain text body
+      text: `Please activate your account with this link http://localhost:3000/activationSuccess/?role=${role}&token=${token}`, // plain text body
     })
     .then((res) => {
       console.log(res);

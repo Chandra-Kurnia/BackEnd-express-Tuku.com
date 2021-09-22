@@ -1,8 +1,8 @@
-const conn = require("../config/db");
+const conn = require('../config/db');
 
 const getAllProduct = (order, OrderBy, keyword, limit, page) => {
   let limitStart = 0;
-  let defaultLimit = 5;
+  let defaultLimit = 20;
   // Limit
   if (limit) {
     defaultLimit = limit;
@@ -14,8 +14,7 @@ const getAllProduct = (order, OrderBy, keyword, limit, page) => {
   }
 
   // BaseQuery
-  let baseQuery =
-    "SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id ";
+  let baseQuery = 'SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id ';
 
   //   Search
   if (keyword) {
@@ -28,7 +27,7 @@ const getAllProduct = (order, OrderBy, keyword, limit, page) => {
   }
 
   baseQuery += ` LIMIT ${limitStart},${defaultLimit}`;
-  
+
   return new Promise((resolve, reject) => {
     conn.query(baseQuery, (err, result) => {
       if (!err) {
@@ -41,84 +40,89 @@ const getAllProduct = (order, OrderBy, keyword, limit, page) => {
 };
 
 const countProduct = () => new Promise((resolve, reject) => {
-  conn.query("SELECT * FROM products", (err, result) => {
-    if(!err){
-      resolve(result)
-    }else{
-      reject(err)
+  conn.query('SELECT * FROM products', (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
     }
-  })
-})
+  });
+});
 
-const createProduct = (data) =>
-  new Promise((resolve, reject) => {
-    conn.query("INSERT INTO products SET ?", data, (err, result) => {
+const createProduct = (data) => new Promise((resolve, reject) => {
+  conn.query('INSERT INTO products SET ?', data, (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
+    }
+  });
+});
+
+const showProduct = (id) => new Promise((resolve, reject) => {
+  conn.query(
+    'SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.status, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id WHERE id_product= ? ',
+    id,
+    (err, result) => {
       if (!err) {
         resolve(result);
       } else {
         reject(err);
       }
-    });
-  });
+    },
+  );
+});
 
-const showProduct = (id) =>
-  new Promise((resolve, reject) => {
-    conn.query(
-      "SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.status, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id WHERE id_product= ? ",
-      id,
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
+const showCategory = (category) => new Promise((resolve, reject) => {
+  conn.query(
+    'SELECT products.id_product, products.product_name, store.store_name, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.status, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id WHERE category.category= ? ',
+    category,
+    (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
       }
-    );
-  });
+    },
+  );
+});
 
-const showCategory = (category) =>
-  new Promise((resolve, reject) => {
-    conn.query(
-      "SELECT products.id_product, products.product_name, store.store_name, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.status, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id WHERE category.category= ? ",
-      category,
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
+const updateProduct = (data, id) => new Promise((resolve, reject) => {
+  conn.query(
+    'UPDATE products SET ? WHERE id_product = ?',
+    [data, id],
+    (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
       }
-    );
-  });
+    },
+  );
+});
 
-const updateProduct = (data, id) =>
-  new Promise((resolve, reject) => {
-    conn.query(
-      "UPDATE products SET ? WHERE id_product = ?",
-      [data, id],
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
+const deleteProduct = (id) => new Promise((resolve, reject) => {
+  conn.query(
+    `DELETE FROM products WHERE id_product = ${id}`,
+    (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
       }
-    );
-  });
+    },
+  );
+});
 
-const deleteProduct = (id) =>
-  new Promise((resolve, reject) => {
-    conn.query(
-      `DELETE FROM products WHERE id_product = ${id}`,
-      (err, result) => {
-        if (!err) {
-          resolve(result);
-        } else {
-          reject(err);
-        }
-      }
-    );
+const updateProductQuantity = (id, quantity) => new Promise((resolve, reject) => {
+  conn.query(`UPDATE products SET quantity = quantity - ${quantity} where id_product = ${id}`, (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
+    }
   });
+});
 
 module.exports = {
   getAllProduct,
@@ -128,4 +132,5 @@ module.exports = {
   deleteProduct,
   showCategory,
   countProduct,
+  updateProductQuantity,
 };

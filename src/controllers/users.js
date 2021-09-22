@@ -1,82 +1,77 @@
-const bcrypt = require("bcrypt");
-const userModels = require("../models/users");
-const helperEmail = require("../helpers/email");
-const helperProducts = require("../helpers/product");
-const jwt = require("jsonwebtoken");
-const { sendEmail } = require("../helpers/activateAccount");
-const handleError = require('../helpers/handleError')
+/* eslint-disable no-unused-vars */
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const userModels = require('../models/users');
+const helperEmail = require('../helpers/email');
+const helperProducts = require('../helpers/product');
+const { sendEmail } = require('../helpers/activateAccount');
+const { response } = require('../helpers/response');
 
 const getAllUser = (req, res) => {
   userModels
     .getAllUser()
     .then((result) => {
-      helperProducts.response(res, 200, "All data successfully loaded", result);
+      helperProducts.response(res, 200, 'All data successfully loaded', result);
     })
     .catch((err) => {
-      helperProducts.response(res, 500, "Internal server error", null, err);
+      helperProducts.response(res, 500, 'Internal server error', null, err);
     });
 };
 //
 const createUser = async (req, res) => {
-  const { name, email, pass, roles } = req.body;
-  if (!name || !email || !pass) {
-    helperProducts.response(res, 400, "Bad request");
-  } else {
-    // Validation success
-    await helperEmail.findEmail(email, "users").then((result) => {
-      if (result[0]) {
-        res.json({
-          message: "email sudah terdaftar",
-        });
-      } else {
-        //   pw hash
-        bcrypt.hash(pass, 10, (err, hash) => {
-          const password = hash;
-          const data = {
-            name,
-            email,
-            password,
-          };
-          userModels
-            .createUser(data)
-            .then(() => {
-              jwt.sign(
-                { email: data.email, status: 0 },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn: "24h" },
-                (err, token) => {
-                  if (err) {
-                    helperProducts.response(
-                      res,
-                      500,
-                      "failed create activate user token"
-                    );
-                  } else {
-                    sendEmail(data.email, token, "users");
-                  }
+  const { name, email, pass } = req.body;
+  // Validation success
+  await helperEmail.findEmail(email, 'users').then((result) => {
+    if (result[0]) {
+      response(res, null, 400, [{ msg: 'email already registered' }]);
+    } else {
+      //   pw hash
+      bcrypt.hash(pass, 10, (err, hash) => {
+        const password = hash;
+        const data = {
+          name,
+          email,
+          password,
+        };
+        userModels
+          .createUser(data)
+          .then(() => {
+            jwt.sign(
+              { email: data.email, status: 0 },
+              process.env.JWT_SECRET_KEY,
+              { expiresIn: '24h' },
+              (error, token) => {
+                if (err) {
+                  helperProducts.response(
+                    res,
+                    500,
+                    'failed create activate user token',
+                  );
+                } else {
+                  sendEmail(data.email, token, 'users');
                 }
-              );
-              helperProducts.response(
-                res,
-                201,
-                `Data successfully Created please activate your account, we send code verification to ${email}`,
-                data,
-                null
-              );
-            })
-            .catch((error) => {
-              helperProducts.response(
-                res,
-                500,
-                "Server internal error",
-                null,
-                error
-              );
-            });
-        });
-      }
-    });
-  }
+              },
+            );
+            helperProducts.response(
+              res,
+              201,
+              `Data successfully Created please activate your account, we send code verification to ${email}`,
+              data,
+              null,
+            );
+          })
+          .catch((error) => {
+            helperProducts.response(
+              res,
+              500,
+              'Server internal error',
+              null,
+              error,
+            );
+          });
+      });
+    }
+  });
 };
 
 const showUser = (req, res) => {
@@ -86,57 +81,49 @@ const showUser = (req, res) => {
     .then((result) => {
       const amount = result.length;
       if (amount < 1) {
-        helperProducts.response(res, 404, "Data not found", null);
+        helperProducts.response(res, 404, 'Data not found', null);
       } else {
         helperProducts.response(
           res,
           200,
           `success get data with id = ${id}`,
-          result
+          result,
         );
       }
     })
     .catch((err) => {
-      helperProducts.response(res, 500, "Internal server error", null, err);
+      helperProducts.response(res, 500, 'Internal server error', null, err);
     });
 };
 
 const updateUser = (req, res) => {
   const { id } = req.params;
-  const { name, email, sex, dateBirth, monthBirth, yearBirth, phoneNumber } =
-    req.body;
+  const {
+    name, email, sex, dateBirth, monthBirth, yearBirth, phoneNumber,
+  } = req.body;
+  const dateOfBirth = `${yearBirth}-${monthBirth}-${dateBirth}`;
+  const data = {
+    name,
+    email,
+    sex,
+    date_of_birth: dateOfBirth,
+    phone_number: phoneNumber,
+    updated_at: new Date(),
+  };
 
-  if (!name || !email) {
-    helperProducts.response(
-      res,
-      400,
-      "Bad request, you inserted a wrong input"
-    );
-  } else {
-    const dateOfBirth = `${yearBirth}-${monthBirth}-${dateBirth}`;
-    const data = {
-      name,
-      email,
-      sex,
-      date_of_birth: dateOfBirth,
-      phone_number: phoneNumber,
-      updated_at: new Date(),
-    };
-
-    userModels
-      .updateUser(data, id)
-      .then(() => {
-        helperProducts.response(
-          res,
-          201,
-          `Successfully updated data with id = ${id}`,
-          data
-        );
-      })
-      .catch((err) => {
-        helperProducts.response(res, 500, "Internal server error", null, err);
-      });
-  }
+  userModels
+    .updateUser(data, id)
+    .then(() => {
+      helperProducts.response(
+        res,
+        201,
+        `Successfully updated data with id = ${id}`,
+        data,
+      );
+    })
+    .catch((err) => {
+      helperProducts.response(res, 500, 'Internal server error', null, err);
+    });
 };
 
 const deleteUser = (req, res) => {
@@ -147,86 +134,68 @@ const deleteUser = (req, res) => {
       helperProducts.response(
         res,
         200,
-        `Succesfully deleted data with id = ${id}`
+        `Succesfully deleted data with id = ${id}`,
       );
     })
     .catch((err) => {
-      helperProducts.response(res, 500, "Internal server error", null, err);
+      helperProducts.response(res, 500, 'Internal server error', null, err);
     });
 };
 
 // Auth
-const login = async (req, res, next) => {
+const login = (req, res) => {
   const { roles, email, password } = req.body;
-  let role = "";
-  if (roles === "seller") {
-    role += "store";
-  } else if (roles === "customer") {
-    role += "users";
+  let role = '';
+  if (roles === 'seller') {
+    role += 'store';
+  } else if (roles === 'customer') {
+    role += 'users';
   } else {
-    handleError(res, 'wrong roles')
+    response(res, null, 400, [{ msg: 'wrong roles' }]);
   }
 
-  await helperEmail
+  helperEmail
     .findEmail(email, role)
     .then((result) => {
       const user = result[0];
       if (!user) {
-        res.json({
-          message: "email tidak ditemukan",
-        });
-        handleError(res, 'not found', 404, 'Your email not found')
-      }else if(user.status !== 1){
-        res.json({
-          message: "your account is not active, please activate it via email"
-        })
-      }
-      else {
+        response(res, null, 400, [{ msg: 'Email not found' }]);
+      } else if (user.status !== 1) {
+        response(res, null, 400, [{ msg: 'Email not activated' }]);
+      } else {
         bcrypt.compare(password, user.password, (err, resCompare) => {
           if (!resCompare) {
-            res.json({
-              message: "password wrong",
-            });
+            response(res, null, 400, [{ msg: 'password wrong' }]);
+          } else if (user.id_user) {
+            user.role = 'customer';
+            jwt.sign(
+              { ...user },
+              process.env.JWT_SECRET_KEY,
+              { expiresIn: '24h' },
+              (error, token) => {
+                user.token = token;
+                delete user.password;
+                response(res, user, 200);
+              },
+            );
           } else {
-            if (user.id_user) {
-              jwt.sign(
-                { id: user.id_user, email, role, status: 1 },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn: "24h" },
-                (err, token) => {
-                  delete user.password;
-                  user.token = token;
-                  res.json({
-                    message: "successfully created user token",
-                    status: 200,
-                    data: user,
-                  });
-                }
-              );
-            } else {
-              jwt.sign(
-                { id: user.store_id, email, role },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn: "24h" },
-                (err, token) => {
-                  delete user.password;
-                  user.token = token;
-                  res.json({
-                    message: "successfully created user token",
-                    status: 200,
-                    data: user,
-                  });
-                }
-              );
-            }
+            user.role = 'seller';
+            jwt.sign(
+              { ...user },
+              process.env.JWT_SECRET_KEY,
+              { expiresIn: '24h' },
+              (error, token) => {
+                delete user.password;
+                user.token = token;
+                response(res, user, 200);
+              },
+            );
           }
         });
       }
     })
     .catch((err) => {
-      res.json({
-        error: "ada error" + err,
-      });
+      response(res, null, 400, { message: 'Internal server error' });
     });
 };
 
@@ -234,18 +203,26 @@ const activate = (req, res) => {
   const { token } = req.params;
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
     if (err) {
-      if (err.name === "TokenExpiredError") {
-        handleError(res, "Login failed", 401, "Your Token Is Expired");
-      } else if (err.name === "JsonWebTokenError") {
-        handleError(res, "Login failed", 401, "Your Token Is Invalid");
+      if (err.name === 'TokenExpiredError') {
+        response(res, null, 400, [{ msg: 'Your token is Expired' }]);
+      } else if (err.name === 'JsonWebTokenError') {
+        response(res, null, 400, [{ msg: 'Your token is invalid' }]);
       } else {
-        handleError(res, "Login failed", 401, "Your Token Isn't Active");
+        response(res, null, 400, [{ msg: 'Your token is not active' }]);
       }
     } else {
-      userModels.activate(decoded.email)
-      helperProducts.response(res, 200, "your account succesfully activated");
+      userModels.activate(decoded.email);
+      helperProducts.response(res, 200, 'your account succesfully activated');
     }
   });
+};
+
+const getuserfromtoken = (req, res) => {
+  try {
+    response(res, req.userLogin, 200, []);
+  } catch (error) {
+    response(res, [], 500, 'Decoded error');
+  }
 };
 
 module.exports = {
@@ -256,4 +233,5 @@ module.exports = {
   showUser,
   login,
   activate,
+  getuserfromtoken,
 };
