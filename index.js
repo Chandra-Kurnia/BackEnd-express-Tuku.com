@@ -6,7 +6,7 @@ const cors = require('cors');
 require('dotenv').config();
 // eslint-disable-next-line import/no-extraneous-dependencies
 const createError = require('http-errors');
-const v1 = require('./src/routes/v1')
+const v1 = require('./src/routes/v1');
 
 // middleware
 app.use(express.json());
@@ -14,9 +14,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 app.use(cors());
 
-
 app.use('/v1', v1);
-app.use('/file', express.static(process.env.IMAGE_URL))
+app.use('/file', express.static(process.env.IMAGE_URL));
 
 app.use('*', (req, res, next) => {
   const error = new createError.NotFound();
@@ -31,5 +30,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(process.env.PORT, () => {
-  console.log('server is running on port 4000');
+  console.log(`server is running on port ${process.env.PORT}`);
 });

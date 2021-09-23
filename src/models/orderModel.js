@@ -60,9 +60,20 @@ const getUserOrder = (userId, keyword, order, start = '', limit = '') => new Pro
   }
 });
 
+const updateStatusOrder = (orderId, status) => new Promise((resolve, reject) => {
+  conn.query(`UPDATE orders SET status = '${status}' WHERE id_orders = ${orderId}`, (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
+    }
+  });
+});
+
 module.exports = {
   createOrder,
   createOrderDetail,
   getAllOrder,
   getUserOrder,
+  updateStatusOrder,
 };

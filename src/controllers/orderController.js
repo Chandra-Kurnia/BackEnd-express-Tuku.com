@@ -97,7 +97,7 @@ const showAllOrder = async (req, res) => {
         prevPage,
       };
       const dataOrder = await orderModel.getAllOrder(keyword, order, start, limit);
-      responsePaginate(res, { ...dataOrder, pagination }, 200);
+      responsePaginate(res, dataOrder, 200, pagination);
     } catch (error) {
       response(res, [], 500, error);
     }
@@ -136,14 +136,28 @@ const showAllOrder = async (req, res) => {
         prevPage,
       };
       const dataOrder = await orderModel.getUserOrder(user.id_user, keyword, order, start, limit);
-      responsePaginate(res, { ...dataOrder, pagination }, 200);
+      responsePaginate(res, dataOrder, 200, pagination);
     } catch (error) {
       response(res, [], 500, error);
     }
   }
 };
 
+const updateStatusOrder = (req, res) => {
+  const { status, orderId } = req.body;
+  orderModel
+    .updateStatusOrder(orderId, status)
+    .then(() => {
+      response(res, [], 200, []);
+    })
+    .catch((err) => {
+      console.log(err);
+      response(res, [], 500, err);
+    });
+};
+
 module.exports = {
   createOrder,
   showAllOrder,
+  updateStatusOrder,
 };

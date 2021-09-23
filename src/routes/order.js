@@ -5,6 +5,7 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 router.post('/createorder', auth.authentication, orderController.createOrder)
-  .get('/getorder', auth.authentication, orderController.showAllOrder);
+  .get('/getorder', auth.authentication, orderController.showAllOrder)
+  .post('/updateorder', orderController.updateStatusOrder);
 
 module.exports = router;
