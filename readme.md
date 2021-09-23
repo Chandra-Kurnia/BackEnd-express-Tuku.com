@@ -1,74 +1,65 @@
-# Crud app using node js & Express js
-
-### `Tools & App`
-
-1. Node Js
-2. Express Js
-3. MySql
-
-### Feature
+# Tuku.com - Ecommerce app
 
 
-### `Tools`
-POST > http://localhost:4000/v1/product/
+## Built With
+* [Node.js](https://nodejs.org/en/)
+* [Express.js](https://expressjs.com/)
 
-| Field | Type | Rules |
-| ----------- | ----------- | ----------- |
-| ProductName | Text | Required
-| store_id | Number | Required
-| category | Number | Required
-| color | Text | Required
-| size | Enum | XS, S, M, L, XL
-| price | Number | Required
-| quantity | Number | Required
-| status | Enum | NEW, FORMER
-| description | Text | Required
-| image | File | Image, maxSize 5mb
->> Read
-GET > http://localhost:4000/v1/product/
->> Update
-PUT > http://localhost:4000/v1/product/idProduct
+## Requirements
+* [Node.js](https://nodejs.org/en/)
+* [Postman](https://www.getpostman.com/) for testing
+* [Database](database-example.sql)
 
-| Field | Type | Rules |
-| ----------- | ----------- | ----------- |
-| ProductName | Text | Optional
-| store_id | Number | Optional
-| category | Number | Optional
-| color | Text | Optional
-| size | Enum | XS, S, M, L, XL
-| price | Number | Optional
-| quantity | Number | Optional
-| status | Enum | NEW, FORMER
-| description | Text | Optional
-| image | File | Image, maxSize 5mb
->> Delete
-DELETE > http://localhost:4000/v1/product/idProduct
->> URL Parameter
-GET > http://localhost:4000/product?order=DESC&keyword=jaket
-> Order, Keyword, Limit, Page
+## Installation
 
-> USERS
+Clone this repository and then use the package manager npm to install dependencies.
 
->> Sign up seller
-POST > http://localhost:4000/v1/store/
 
-| Field | Type | Rules |
-| ----------- | ----------- | ----------- |
-| Owner | Text | Required
-| Email | Email | Required
-| PhoneNumber | Text | Required
-| Storename | Text | Required
-| password | Password | Required
->> Sign in seller
-POST > http://localhost:4000/v1/store/
+```bash
+npm install
+```
 
->> Sign up customer
-POST > http://localhost:4000/v1/users/
+## Setup .env example
 
-| Field | Type | Rules |
-| ----------- | ----------- | ----------- |
-| Name | Text | Required
-| Email | Email | Required
-| password | Password | Required
->> Sign in customer
-POST > http://localhost:4000/v1/users/
+Create .env file in your root project folder.
+
+```
+DB_HOST=
+DB_USER=
+DB_PASS=
+DB_NAME=
+PORT=4000
+USER_EMAIL=
+USER_EMAIL_PW=
+
+JWT_SECRET_KEY=
+
+IMAGE_URL="./src/assets/uploads/img/products"
+
+```
+
+## Run the app
+
+Development mode
+
+```bash
+npm run dev
+```
+
+Deploy mode
+
+```bash
+npm start
+```
+
+## REST API
+
+You can view my Postman collection [here](https://www.postman.com/crimson-meadow-842892/workspace/crud-node-js) </br>
+
+## Frontend repository
+https://github.com/Chandra-Kurnia/React-Tuku.com
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
