@@ -10,6 +10,7 @@ const createOrder = (req, res) => {
   const order = {
     invoice_number: uuidv4(),
     id_user: req.userLogin.id_user,
+    store_id: req.body.ordersUser.store_id,
     phone_number: req.userLogin.phone_number,
     address: req.body.ordersUser.address,
     payment: req.body.ordersUser.payment,
@@ -64,7 +65,7 @@ const showAllOrder = async (req, res) => {
   }
   if (user.role === 'seller') {
     try {
-      const data = await orderModel.getAllOrder(keyword, order);
+      const data = await orderModel.getAllOrder(user.store_id, keyword, order);
       if (data.length < 1) {
         return response(res, [], 200, []);
       }
@@ -96,7 +97,7 @@ const showAllOrder = async (req, res) => {
         nextPage,
         prevPage,
       };
-      const dataOrder = await orderModel.getAllOrder(keyword, order, start, limit);
+      const dataOrder = await orderModel.getAllOrder(user.store_id, keyword, order, start, limit);
       responsePaginate(res, dataOrder, 200, pagination);
     } catch (error) {
       response(res, [], 500, error);

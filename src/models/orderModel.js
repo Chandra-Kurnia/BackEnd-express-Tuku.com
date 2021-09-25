@@ -20,9 +20,9 @@ const createOrderDetail = (detailOrder) => new Promise((resolve, reject) => {
   });
 });
 
-const getAllOrder = (keyword, order, start = '', limit = '') => new Promise((resolve, reject) => {
+const getAllOrder = (storeId, keyword, order, start = '', limit = '') => new Promise((resolve, reject) => {
   if (start !== '' && limit !== '') {
-    conn.query(`SELECT * FROM orders WHERE invoice_number LIKE '%${keyword}%' ORDER BY created_at ${order} LIMIT ${start}, ${limit}`, (err, result) => {
+    conn.query(`SELECT * FROM orders WHERE store_id = ${storeId} && invoice_number LIKE '%${keyword}%' ORDER BY created_at ${order} LIMIT ${start}, ${limit}`, (err, result) => {
       if (!err) {
         resolve(result);
       } else {
@@ -30,7 +30,7 @@ const getAllOrder = (keyword, order, start = '', limit = '') => new Promise((res
       }
     });
   } else {
-    conn.query(`SELECT * FROM orders WHERE invoice_number LIKE '%${keyword}%' ORDER BY created_at ${order}`, (err, result) => {
+    conn.query(`SELECT * FROM orders WHERE store_id = ${storeId} && invoice_number LIKE '%${keyword}%' ORDER BY created_at ${order}`, (err, result) => {
       if (!err) {
         resolve(result);
       } else {
