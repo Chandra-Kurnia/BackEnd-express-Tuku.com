@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const fs = require('fs');
 const redis = require('redis');
 const modelProduct = require('../models/product');
@@ -6,10 +7,8 @@ const helpersProduct = require('../helpers/product');
 const client = redis.createClient();
 
 const createProduct = (req, res) => {
-  console.log(req.file);
   const {
     productName,
-    store_id,
     category,
     color,
     size,
@@ -20,7 +19,7 @@ const createProduct = (req, res) => {
   } = req.body;
   const data = {
     product_name: productName,
-    store_id,
+    store_id: req.storeLogin.store_id,
     category,
     color,
     size,
@@ -46,9 +45,9 @@ const createProduct = (req, res) => {
       helpersProduct.response(res, 500, 'Server error', null, err);
       fs.unlink(
         `./src/assets/uploads/img/products/${req.file.filename}`,
-        (err) => {
-          if (err) {
-            console.log(`Error unlink image product!${err}`);
+        (error) => {
+          if (error) {
+            console.log(`Error unlink image product!${error}`);
           }
         },
       );
@@ -58,7 +57,6 @@ const createProduct = (req, res) => {
 // read product
 const getAllProduct = (req, res) => {
   let lengthAllProduct = '';
-  const storeId = req.storeLogin.store_id;
   const {
     order, orderBy, keyword, limit, page,
   } = req.query;
@@ -69,7 +67,43 @@ const getAllProduct = (req, res) => {
     })
     .catch(() => {});
   modelProduct
-    .getAllProduct(order, orderBy, keyword, limit, page, storeId)
+    .getAllProduct(order, orderBy, keyword, limit, page)
+    .then((dataProduct) => {
+      const amount = dataProduct.length;
+      if (amount < 1) {
+        helpersProduct.response(res, 404, 'Data Not Found', null);
+      } else {
+        helpersProduct.response(
+          res,
+          200,
+          'all data successfully loaded',
+          dataProduct,
+          null,
+          order,
+          keyword,
+          lengthAllProduct,
+        );
+      }
+    })
+    .catch((err) => {
+      helpersProduct.response(res, 500, 'Server error', null, err);
+    });
+};
+
+const getByStore = (req, res) => {
+  let lengthAllProduct = '';
+  const storeId = req.storeLogin.store_id;
+  const {
+    order, orderBy, keyword, limit, page,
+  } = req.query;
+  modelProduct
+    .countProductStore(storeId)
+    .then((amountAlLProduct) => {
+      lengthAllProduct = amountAlLProduct.length;
+    })
+    .catch(() => {});
+  modelProduct
+    .getByStore(order, orderBy, keyword, limit, page, storeId)
     .then((dataProduct) => {
       const amount = dataProduct.length;
       if (amount < 1) {
@@ -102,7 +136,6 @@ const showProduct = (req, res) => {
       if (amount < 1) {
         helpersProduct.response(res, 404, 'Data Not Found', null);
       } else {
-        client.set(`chaceProduct/${id}`, JSON.stringify(product));
         helpersProduct.response(
           res,
           200,
@@ -145,7 +178,6 @@ const updateProduct = (req, res) => {
   const { id } = req.params;
   const {
     productName,
-    store_id,
     category,
     color,
     size,
@@ -172,9 +204,12 @@ const updateProduct = (req, res) => {
         imageProduct = req.file.filename;
       }
 
+      if (currentProduct.store_id !== req.storeLogin.store_id) {
+        return helpersProduct.response(res, 400, 'You cant update this product');
+      }
+
       const data = {
         product_name: productName,
-        store_id,
         category,
         color,
         size,
@@ -188,12 +223,12 @@ const updateProduct = (req, res) => {
 
       modelProduct
         .updateProduct(data, id)
-        .then((result) => {
+        .then((resultData) => {
           helpersProduct.response(
             res,
             200,
             `Successfully updated data product with id ${id}`,
-            result,
+            resultData,
             null,
           );
         })
@@ -202,9 +237,9 @@ const updateProduct = (req, res) => {
           helpersProduct.response(res, 500, 'Server error', null, err);
           fs.unlink(
             `./src/assets/uploads/img/products/${req.file.filename}`,
-            (err) => {
-              if (err) {
-                console.log(`Error unlink image product!${err}`);
+            (error) => {
+              if (error) {
+                console.log(`Error unlink image product!${error}`);
               }
             },
           );
@@ -214,9 +249,9 @@ const updateProduct = (req, res) => {
       console.log(`Error! data not found ${err}`);
       fs.unlink(
         `./src/assets/uploads/img/products/${req.file.filename}`,
-        (err) => {
-          if (err) {
-            console.log(`Error unlink image product!${err}`);
+        (errorr) => {
+          if (errorr) {
+            console.log(`Error unlink image product!${errorr}`);
           }
         },
       );
@@ -230,12 +265,12 @@ const deleteProduct = (req, res) => {
     const dataProduct = result[0];
     modelProduct
       .deleteProduct(id)
-      .then((result) => {
+      .then((deleteResult) => {
         helpersProduct.response(
           res,
           200,
           `Successfully delete product with id = ${id}`,
-          result,
+          deleteResult,
           null,
         );
         fs.unlink(
@@ -261,4 +296,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   showCategory,
+  getByStore,
 };

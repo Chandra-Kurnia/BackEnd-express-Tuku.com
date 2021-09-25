@@ -10,7 +10,8 @@ const { createUpdateProductRules } = require('../validation/productValidate');
 
 // Route target
 router
-  .get('/', auth.authenticationAsSeller, ProductController.getAllProduct)
+  .get('/', ProductController.getAllProduct)
+  .get('/getByStore', auth.authenticationAsSeller, ProductController.getByStore)
   .post(
     '/',
     auth.authenticationAsSeller,
@@ -26,6 +27,7 @@ router
   )
   .put(
     '/:id',
+    auth.authenticationAsSeller,
     upload.single('image'),
     createUpdateProductRules(),
     validateResult,

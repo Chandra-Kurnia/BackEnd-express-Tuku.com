@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
 const { response } = require('../helpers/response');
 
@@ -45,7 +46,23 @@ const authenticationAsSeller = (req, res, next) => {
   });
 };
 
+const authDecode = (req, res, next) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    return next();
+  }
+  const result = token.split(' ')[1];
+  jwt.verify(result, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return next();
+    }
+    req.user = decoded;
+    return next();
+  });
+};
+
 module.exports = {
   authentication,
   authenticationAsSeller,
+  authDecode,
 };

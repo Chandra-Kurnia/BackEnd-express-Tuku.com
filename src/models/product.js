@@ -1,6 +1,45 @@
 const conn = require('../config/db');
 
-const getAllProduct = (order, OrderBy, keyword, limit, page, storeId) => {
+const getAllProduct = (order, OrderBy, keyword, limit, page) => {
+  let limitStart = 0;
+  let defaultLimit = 20;
+  // Limit
+  if (limit) {
+    defaultLimit = limit;
+  }
+
+  // Page
+  if (page > 1) {
+    limitStart = defaultLimit * (page - 1);
+  }
+
+  // BaseQuery
+  let baseQuery = 'SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id';
+
+  //   Search
+  if (keyword) {
+    baseQuery += ` WHERE product_name LIKE '%${keyword}%'`;
+  }
+
+  //   Order
+  if (order) {
+    baseQuery += ` ORDER BY ${OrderBy} ${order}`;
+  }
+
+  baseQuery += ` LIMIT ${limitStart},${defaultLimit}`;
+
+  return new Promise((resolve, reject) => {
+    conn.query(baseQuery, (err, result) => {
+      if (!err) {
+        resolve(result);
+      } else {
+        reject(err);
+      }
+    });
+  });
+};
+
+const getByStore = (order, OrderBy, keyword, limit, page, storeId = '') => {
   let limitStart = 0;
   let defaultLimit = 20;
   // Limit
@@ -49,6 +88,16 @@ const countProduct = () => new Promise((resolve, reject) => {
   });
 });
 
+const countProductStore = (storeId) => new Promise((resolve, reject) => {
+  conn.query(`SELECT * FROM products WHERE store_id = ${storeId}`, (err, result) => {
+    if (!err) {
+      resolve(result);
+    } else {
+      reject(err);
+    }
+  });
+});
+
 const createProduct = (data) => new Promise((resolve, reject) => {
   conn.query('INSERT INTO products SET ?', data, (err, result) => {
     if (!err) {
@@ -61,7 +110,7 @@ const createProduct = (data) => new Promise((resolve, reject) => {
 
 const showProduct = (id) => new Promise((resolve, reject) => {
   conn.query(
-    'SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.status, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id WHERE id_product= ? ',
+    'SELECT products.id_product, products.product_name, store.store_id, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.status, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id WHERE id_product= ? ',
     id,
     (err, result) => {
       if (!err) {
@@ -133,4 +182,6 @@ module.exports = {
   showCategory,
   countProduct,
   updateProductQuantity,
+  getByStore,
+  countProductStore,
 };
