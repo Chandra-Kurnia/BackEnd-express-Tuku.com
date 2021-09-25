@@ -1,6 +1,6 @@
 const conn = require('../config/db');
 
-const getAllProduct = (order, OrderBy, keyword, limit, page) => {
+const getAllProduct = (order, OrderBy, keyword, limit, page, storeId) => {
   let limitStart = 0;
   let defaultLimit = 20;
   // Limit
@@ -14,7 +14,7 @@ const getAllProduct = (order, OrderBy, keyword, limit, page) => {
   }
 
   // BaseQuery
-  let baseQuery = 'SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id ';
+  let baseQuery = `SELECT products.id_product, products.product_name, store.store_name, category.id_category, category.category, products.color, products.size, products.price, products.quantity, products.status, products.description, products.image, products.created_at, products.updated_at  FROM products INNER JOIN category ON category.id_category = products.category INNER JOIN store ON products.store_id = store.store_id WHERE store.store_id = ${storeId}`;
 
   //   Search
   if (keyword) {

@@ -1,9 +1,9 @@
+const fs = require('fs');
 const redis = require('redis');
 const modelProduct = require('../models/product');
 const helpersProduct = require('../helpers/product');
 
 const client = redis.createClient();
-const fs = require('fs');
 
 const createProduct = (req, res) => {
   console.log(req.file);
@@ -58,6 +58,7 @@ const createProduct = (req, res) => {
 // read product
 const getAllProduct = (req, res) => {
   let lengthAllProduct = '';
+  const storeId = req.storeLogin.store_id;
   const {
     order, orderBy, keyword, limit, page,
   } = req.query;
@@ -66,9 +67,9 @@ const getAllProduct = (req, res) => {
     .then((amountAlLProduct) => {
       lengthAllProduct = amountAlLProduct.length;
     })
-    .catch((err) => {});
+    .catch(() => {});
   modelProduct
-    .getAllProduct(order, orderBy, keyword, limit, page)
+    .getAllProduct(order, orderBy, keyword, limit, page, storeId)
     .then((dataProduct) => {
       const amount = dataProduct.length;
       if (amount < 1) {

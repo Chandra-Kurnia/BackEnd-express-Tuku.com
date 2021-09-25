@@ -38,14 +38,8 @@ const authenticationAsSeller = (req, res, next) => {
       } else {
         response(res, null, 400, [{ msg: 'Your token is not active' }]);
       }
-    } else if (decoded.role !== 'store') {
-      response(
-        res,
-        'Acces denied',
-        403,
-        "You don't have permission for access this service",
-      );
     } else {
+      req.storeLogin = decoded;
       next();
     }
   });

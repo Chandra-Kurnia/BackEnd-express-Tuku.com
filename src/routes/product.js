@@ -10,7 +10,7 @@ const { createUpdateProductRules } = require('../validation/productValidate');
 
 // Route target
 router
-  .get('/', ProductController.getAllProduct)
+  .get('/', auth.authenticationAsSeller, ProductController.getAllProduct)
   .post(
     '/',
     auth.authenticationAsSeller,
@@ -22,7 +22,6 @@ router
   .get('/show/:id', ProductController.showProduct)
   .get(
     '/category/:category',
-    redis.chaceProductByCateogry,
     ProductController.showCategory,
   )
   .put(
