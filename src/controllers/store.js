@@ -1,10 +1,16 @@
+/* eslint-disable consistent-return */
+/* eslint-disable camelcase */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 const modelStore = require('../models/store');
 const helpersProduct = require('../helpers/product');
 const helperEmail = require('../helpers/email');
 const { sendEmail } = require('../helpers/activateAccount');
 const { response } = require('../helpers/response');
+const helperProducts = require('../helpers/product');
 
 const createStore = (req, res) => {
   const {
@@ -34,8 +40,8 @@ const createStore = (req, res) => {
               { email: data.email },
               process.env.JWT_SECRET_KEY,
               { expiresIn: '24h' },
-              (err, token) => {
-                if (err) {
+              (error, token) => {
+                if (error) {
                   helperProducts.response(
                     res,
                     500,
@@ -55,8 +61,8 @@ const createStore = (req, res) => {
               null,
             );
           })
-          .catch((err) => {
-            helpersProduct.response(res, 500, 'Server error', null, err);
+          .catch((error) => {
+            helpersProduct.response(res, 500, 'Server error', null, error);
           });
       });
     }
@@ -114,28 +120,68 @@ const showStore = (req, res) => {
     });
 };
 
-const updateStore = (req, res) => {
+const updateStore = async (req, res) => {
   const { id } = req.params;
   const {
-    email, phoneNumber, storeName, storeDesc,
+    email, phone_number, store_name, store_desc,
   } = req.body;
-  const data = {
+
+  let data = {
     email,
-    phone_number: phoneNumber,
-    store_name: storeName,
-    store_desc: storeDesc,
+    phone_number,
+    store_name,
+    store_desc,
     updated_at: new Date(),
   };
+
+  const currentStore = await modelStore.showStore(id);
+
+  if (req.files) {
+    if (req.files.avatar.mimetype !== 'image/jpeg' && req.files.avatar.mimetype !== 'image/png') {
+      return helperProducts.response(res, 400, 'Only img/jpg/png is allowed', null, []);
+    } if (req.files.avatar.size > 1048576 * 5) {
+      return helperProducts.response(res, 400, 'image size max is 5mb', null, []);
+    }
+    const filename = uuidv4() + path.extname(req.files.avatar.name);
+    const savePath = path.join(path.dirname(''), '/public/avatar', filename);
+    req.files.avatar.mv(savePath);
+    data = { ...data, avatar: `/avatar/${filename}` };
+    if (currentStore[0].avatar !== null) {
+      fs.unlink(`./public/${currentStore[0].avatar}`, (err) => {
+        if (err) {
+          console.log('Error unlink avatar');
+          console.log(err);
+        }
+      });
+    }
+  }
+
   modelStore
     .updateStore(data, id)
-    .then((result) => {
-      helpersProduct.response(
-        res,
-        200,
-        `Successfully updated data store with id ${id}`,
-        result,
-        null,
-      );
+    .then(() => {
+      modelStore.showStore(id)
+        .then((newData) => {
+          const newDataStore = newData[0];
+          delete newDataStore.password;
+          newDataStore.role = 'seller';
+          jwt.sign(
+            { ...newDataStore },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '24h' },
+            (error, token) => {
+              newDataStore.token = token;
+              helperProducts.response(
+                res,
+                201,
+                `Successfully updated data with id = ${id}`,
+                newDataStore,
+              );
+            },
+          );
+        })
+        .catch((err) => {
+          helpersProduct.response(res, 500, 'Server error', null, err);
+        });
     })
     .catch((err) => {
       helpersProduct.response(res, 500, 'Server error', null, err);

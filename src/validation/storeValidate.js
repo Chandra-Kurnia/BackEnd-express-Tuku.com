@@ -1,61 +1,61 @@
-const { body, param } = require("express-validator");
+const { body, param } = require('express-validator');
 
 const createUpdateStoreRules = () => [
-  body("owner")
+  body('owner')
     .notEmpty()
-    .withMessage("Owner cannot empty")
+    .withMessage('Owner cannot empty')
     .bail()
     .isLength({ min: 4, max: 40 })
-    .withMessage("Min 4, max 40"),
-  body("email")
+    .withMessage('Min 4, max 40'),
+  body('email')
     .notEmpty()
-    .withMessage("email cannot empty")
+    .withMessage('email cannot empty')
     .bail()
     .isEmail()
-    .withMessage("Your email is invalid"),
-  body("phoneNumber")
+    .withMessage('Your email is invalid'),
+  body('phoneNumber')
     .notEmpty()
-    .withMessage("Phone number cannot empty")
+    .withMessage('Phone number cannot empty')
     .bail()
     .isLength({ min: 3, max: 20 })
-    .withMessage("Phone number min 3, max 20")
+    .withMessage('Phone number min 3, max 20')
     .bail()
     .isNumeric()
-    .withMessage("Phone number must be number"),
-  body("storeName")
+    .withMessage('Phone number must be number'),
+  body('storeName')
     .notEmpty()
-    .withMessage("Store name cannot empty")
+    .withMessage('Store name cannot empty')
     .isLength({ min: 4, max: 40 })
-    .withMessage("Store name min 4, max 40"),
-  body("pass")
+    .withMessage('Store name min 4, max 40'),
+  body('pass')
     .notEmpty()
-    .withMessage("Password cannot empty")
+    .withMessage('Password cannot empty')
     .bail()
     .isLength({ min: 4, max: 15 })
-    .withMessage("Password min 4 & max 15"),
+    .withMessage('Password min 4 & max 15'),
 ];
 
 const updateStoreRules = () => [
-  body("email")
+  body('email')
     .notEmpty()
-    .withMessage("email cannot empty")
+    .withMessage('email cannot empty')
     .bail()
     .isEmail()
-    .withMessage("Your email is invalid"),
-  body("phoneNumber")
+    .withMessage('Your email is invalid'),
+  body('phone_number')
     .notEmpty()
-    .withMessage("Phone number cannot empty")
+    .withMessage('Phone number cannot empty')
     .bail()
     .isLength({ min: 3, max: 20 })
-    .withMessage("Phone number min 3, max 20")
+    .withMessage('Phone number min 3, max 20')
     .bail()
     .isNumeric()
-    .withMessage("Phone number must be number"),
-  body("storeName")
+    .withMessage('Phone number must be number'),
+  body('store_name')
     .notEmpty()
-    .withMessage("Store name cannot empty")
+    .withMessage('Store name cannot empty')
     .isLength({ min: 4, max: 40 })
-    .withMessage("Store name min 4, max 40"),
+    .withMessage('Store name min 4, max 40'),
 ];
 
 module.exports = {
