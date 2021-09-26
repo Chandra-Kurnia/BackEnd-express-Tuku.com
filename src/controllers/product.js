@@ -1,6 +1,10 @@
 /* eslint-disable consistent-return */
+
 const fs = require('fs');
 const redis = require('redis');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const { response } = require('../helpers/response');
 const modelProduct = require('../models/product');
 const helpersProduct = require('../helpers/product');
 
@@ -17,7 +21,7 @@ const createProduct = (req, res) => {
     status,
     description,
   } = req.body;
-  const data = {
+  let data = {
     product_name: productName,
     store_id: req.storeLogin.store_id,
     category,
@@ -27,8 +31,22 @@ const createProduct = (req, res) => {
     quantity,
     status,
     description,
-    image: req.file.filename,
   };
+
+  if (req.files) {
+    if (req.files.image.mimetype !== 'image/jpeg' && req.files.image.mimetype !== 'image/png') {
+      return response(res, [], 400, [{ msg: 'Only image is allowed' }]);
+    } if (req.files.image.size > 1048576 * 5) {
+      return response(res, [], 400, [{ msg: 'Image size max is 5mb' }]);
+    }
+    const filename = uuidv4() + path.extname(req.files.image.name);
+    const savepath = path.join(path.dirname(''), '/src/assets/uploads/img/products', filename);
+    req.files.image.mv(savepath);
+    data = { ...data, image: filename };
+  } else {
+    return response(res, [], 400, [{ msg: 'Please select your product image' }]);
+  }
+
   modelProduct
     .createProduct(data)
     .then(() => {
@@ -39,18 +57,9 @@ const createProduct = (req, res) => {
         data,
         null,
       );
-      console.log('Success');
     })
     .catch((err) => {
       helpersProduct.response(res, 500, 'Server error', null, err);
-      fs.unlink(
-        `./src/assets/uploads/img/products/${req.file.filename}`,
-        (error) => {
-          if (error) {
-            console.log(`Error unlink image product!${error}`);
-          }
-        },
-      );
     });
 };
 
@@ -191,24 +200,12 @@ const updateProduct = (req, res) => {
     .showProduct(id)
     .then((result) => {
       const currentProduct = result[0];
-      let imageProduct = currentProduct.image;
-      if (req.file !== undefined) {
-        fs.unlink(
-          `./src/assets/uploads/img/products/${currentProduct.image}`,
-          (err) => {
-            if (err) {
-              console.log(`Error unlink old image product!${err}`);
-            }
-          },
-        );
-        imageProduct = req.file.filename;
-      }
 
       if (currentProduct.store_id !== req.storeLogin.store_id) {
         return helpersProduct.response(res, 400, 'You cant update this product');
       }
 
-      const data = {
+      let data = {
         product_name: productName,
         category,
         color,
@@ -217,9 +214,26 @@ const updateProduct = (req, res) => {
         quantity,
         status,
         description,
-        image: imageProduct,
         updated_at: new Date(),
       };
+
+      if (req.files) {
+        if (req.files.image.mimetype !== 'image/jpeg' && req.files.image.mimetype !== 'image/png') {
+          return response(res, [], 400, [{ msg: 'Only image is allowed' }]);
+        } if (req.files.image.size > 1048576 * 5) {
+          return response(res, [], 400, [{ msg: 'Image size max is 5mb' }]);
+        }
+        const filename = uuidv4() + path.extname(req.files.image.name);
+        const savepath = path.join(path.dirname(''), '/src/assets/uploads/img/products', filename);
+        req.files.image.mv(savepath);
+        data = { ...data, image: filename };
+        fs.unlink(`./src/assets/uploads/img/products/${currentProduct.image}`, (err) => {
+          if (err) {
+            console.log('Error unlink image product');
+            console.log(err);
+          }
+        });
+      }
 
       modelProduct
         .updateProduct(data, id)
@@ -235,26 +249,10 @@ const updateProduct = (req, res) => {
         .catch((err) => {
           console.log(err);
           helpersProduct.response(res, 500, 'Server error', null, err);
-          fs.unlink(
-            `./src/assets/uploads/img/products/${req.file.filename}`,
-            (error) => {
-              if (error) {
-                console.log(`Error unlink image product!${error}`);
-              }
-            },
-          );
         });
     })
     .catch((err) => {
       console.log(`Error! data not found ${err}`);
-      fs.unlink(
-        `./src/assets/uploads/img/products/${req.file.filename}`,
-        (errorr) => {
-          if (errorr) {
-            console.log(`Error unlink image product!${errorr}`);
-          }
-        },
-      );
     });
 };
 
@@ -277,7 +275,7 @@ const deleteProduct = (req, res) => {
           `./src/assets/uploads/img/products/${dataProduct.image}`,
           (err) => {
             if (err) {
-              console.log(`Error unlink image product!${err}`);
+              console.log(`Error unlink image product! : ${err}`);
             }
           },
         );

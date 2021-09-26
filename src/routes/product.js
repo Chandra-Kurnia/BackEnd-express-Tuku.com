@@ -2,7 +2,6 @@ const express = require('express');
 
 const router = express.Router();
 const ProductController = require('../controllers/product');
-const upload = require('../middleware/multer');
 const auth = require('../middleware/auth');
 const redis = require('../middleware/redis');
 const validateResult = require('../validation/validationResult');
@@ -15,7 +14,6 @@ router
   .post(
     '/',
     auth.authenticationAsSeller,
-    upload.single('image'),
     createUpdateProductRules(),
     validateResult,
     ProductController.createProduct,
@@ -28,7 +26,6 @@ router
   .put(
     '/:id',
     auth.authenticationAsSeller,
-    upload.single('image'),
     createUpdateProductRules(),
     validateResult,
     ProductController.updateProduct,
