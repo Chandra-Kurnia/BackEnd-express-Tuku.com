@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const cors = require('cors');
+const fileupload = require('express-fileupload');
 require('dotenv').config();
 // eslint-disable-next-line import/no-extraneous-dependencies
 const createError = require('http-errors');
@@ -13,9 +14,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 app.use(cors());
+app.use(fileupload());
 
 app.use('/v1', v1);
 app.use('/file', express.static(process.env.IMAGE_URL));
+app.use('/avatar', express.static('./public/avatar'));
 
 app.use('*', (req, res, next) => {
   const error = new createError.NotFound();

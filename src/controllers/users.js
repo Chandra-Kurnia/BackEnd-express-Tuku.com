@@ -1,6 +1,11 @@
+/* eslint-disable camelcase */
+/* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
 const userModels = require('../models/users');
 const helperEmail = require('../helpers/email');
 const helperProducts = require('../helpers/product');
@@ -96,30 +101,70 @@ const showUser = (req, res) => {
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
   const { id } = req.params;
   const {
-    name, email, sex, dateBirth, monthBirth, yearBirth, phoneNumber,
+    name, email, sex, dateBirth, monthBirth, yearBirth, phone_number,
   } = req.body;
   const dateOfBirth = `${yearBirth}-${monthBirth}-${dateBirth}`;
-  const data = {
+
+  let data = {
     name,
     email,
     sex,
     date_of_birth: dateOfBirth,
-    phone_number: phoneNumber,
+    phone_number,
     updated_at: new Date(),
   };
+
+  const currentUser = await userModels.showUser(id);
+
+  if (req.files) {
+    if (req.files.avatar.mimetype !== 'image/jpeg' && req.files.avatar.mimetype !== 'image/png') {
+      return helperProducts.response(res, 400, 'Only img/jpg/png is allowed', null, []);
+    } if (req.files.avatar.size > 1048576 * 5) {
+      return helperProducts.response(res, 400, 'image size max is 5mb', null, []);
+    }
+    const filename = uuidv4() + path.extname(req.files.avatar.name);
+    const savePath = path.join(path.dirname(''), '/public/avatar', filename);
+    req.files.avatar.mv(savePath);
+    data = { ...data, avatar: `/avatar/${filename}` };
+    if (currentUser[0].avatar !== null) {
+      fs.unlink(`./public/${currentUser[0].avatar}`, (err) => {
+        if (err) {
+          console.log('Error unlink avatar');
+          console.log(err);
+        }
+      });
+    }
+  }
 
   userModels
     .updateUser(data, id)
     .then(() => {
-      helperProducts.response(
-        res,
-        201,
-        `Successfully updated data with id = ${id}`,
-        data,
-      );
+      userModels.showUser(id)
+        .then((newData) => {
+          const newDataUser = newData[0];
+          delete newDataUser.password;
+          newDataUser.role = 'customer';
+          jwt.sign(
+            { ...newDataUser },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '24h' },
+            (error, token) => {
+              newDataUser.token = token;
+              helperProducts.response(
+                res,
+                201,
+                `Successfully updated data with id = ${id}`,
+                newDataUser,
+              );
+            },
+          );
+        })
+        .catch((error) => {
+          helperProducts.response(res, 500, 'Internal server error', null, error);
+        });
     })
     .catch((err) => {
       helperProducts.response(res, 500, 'Internal server error', null, err);
