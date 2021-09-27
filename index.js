@@ -7,6 +7,7 @@ const fileupload = require('express-fileupload');
 require('dotenv').config();
 // eslint-disable-next-line import/no-extraneous-dependencies
 const createError = require('http-errors');
+const path = require('path');
 const v1 = require('./src/routes/v1');
 
 // middleware
@@ -17,8 +18,8 @@ app.use(cors());
 app.use(fileupload());
 
 app.use('/v1', v1);
-app.use('/file', express.static(process.env.IMAGE_URL));
-app.use('/avatar', express.static('./public/avatar'));
+app.use('/file', express.static(path.resolve('./src/assets/uploads/img/products')));
+app.use('/avatar', express.static(path.resolve('./public/avatar')));
 
 app.use('*', (req, res, next) => {
   const error = new createError.NotFound();
