@@ -1,14 +1,11 @@
 /* eslint-disable consistent-return */
 
 const fs = require('fs');
-const redis = require('redis');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { response } = require('../helpers/response');
 const modelProduct = require('../models/product');
 const helpersProduct = require('../helpers/product');
-
-const client = redis.createClient();
 
 const createProduct = (req, res) => {
   const {
@@ -168,7 +165,6 @@ const showCategory = (req, res) => {
       if (amount < 1) {
         helpersProduct.response(res, 404, 'Data Not Found', null);
       } else {
-        client.set(`chaceByCategory/${category}`, JSON.stringify(product));
         helpersProduct.response(
           res,
           200,

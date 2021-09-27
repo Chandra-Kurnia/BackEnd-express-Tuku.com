@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const ProductController = require('../controllers/product');
 const auth = require('../middleware/auth');
-const redis = require('../middleware/redis');
 const validateResult = require('../validation/validationResult');
 const { createUpdateProductRules } = require('../validation/productValidate');
 
@@ -30,7 +29,6 @@ router
     validateResult,
     ProductController.updateProduct,
   )
-  .delete('/:id', auth.authenticationAsSeller, ProductController.deleteProduct)
-  .get('/clear', redis.clearAllChaceProduct);
+  .delete('/:id', auth.authenticationAsSeller, ProductController.deleteProduct);
 // Export
 module.exports = router;
