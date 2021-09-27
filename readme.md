@@ -7,7 +7,7 @@
   <p align="center">
     <a href="https://github.com/Chandra-Kurnia/BackEnd-express-Tuku.com"><strong>Explore the docs »</strong></a>
     <br />
-    <a href="https://next-zembrani.vercel.app//">View Demo</a>
+    <a href="https://next-zembrani.vercel.app/">View Demo</a>
     ·
     <a href="https://github.com/Chandra-Kurnia/BackEnd-express-Tuku.com">Report Bug</a>
     ·
@@ -133,8 +133,3 @@ Contributions are what make the open source community such an amazing place to b
 My Email : candrakurniawan.dev@gmail.com
 
 Project Link: [https://github.com/Chandra-Kurnia/BackEnd-express-Tuku.com](https://github.com/Chandra-Kurnia/BackEnd-express-Tuku.com)
-
-
-
-
-
