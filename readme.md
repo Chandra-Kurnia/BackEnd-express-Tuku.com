@@ -7,7 +7,7 @@
   <p align="center">
     <a href="https://github.com/Chandra-Kurnia/BackEnd-express-Tuku.com"><strong>Explore the docs »</strong></a>
     <br />
-    <a href="https://next-zembrani.vercel.app/">View Demo</a>
+    <a href="https://react-tuku-com.vercel.app/">View Demo</a>
     ·
     <a href="https://github.com/Chandra-Kurnia/BackEnd-express-Tuku.com">Report Bug</a>
     ·
